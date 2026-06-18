@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Card, Button, Badge } from '@/components/ui'
 import { vocabData } from '@/data/vocab'
 import { useProgress } from '@/store/progress'
@@ -352,6 +352,7 @@ export default function LessonsPage() {
   const [screen, setScreen]           = useState<'map' | 'intro' | 'flashcard' | 'quiz' | 'result'>('map')
   const [activeUnit, setActiveUnit]   = useState<typeof UNITS[number] | null>(null)
   const [words, setWords]             = useState<VocabWord[]>([])
+  const wordsRef = useRef<VocabWord[]>([])
   const [cardIdx, setCardIdx]         = useState(0)
   const [showBack, setShowBack]       = useState(false)
   const [showPronunciation, setShowPronunciation] = useState(false)
@@ -389,6 +390,7 @@ export default function LessonsPage() {
       w = shuffle(w).slice(0, 12)
     }
     setWords(w)
+    wordsRef.current = w
     setActiveUnit(unit)
     setCardIdx(0)
     setShowBack(false)
@@ -420,11 +422,12 @@ export default function LessonsPage() {
   }
 
   function buildQuiz() {
+    const wordsToUse = wordsRef.current
     const allEnglish  = vocabData.map(v => v.english)
     const allJapanese = vocabData.map(v => v.japanese)
     const allRomaji   = vocabData.map(v => v.romaji)
 
-    const qs: QuizQ[] = words.slice(0, 8).map((w, i) => {
+    const qs: QuizQ[] = wordsToUse.slice(0, 8).map((w, i) => {
       const type: QuizQ['type'] = i % 3 === 0 ? 'romaji' : i % 2 === 0 ? 'en→jp' : 'jp→en'
 
       if (type === 'jp→en') {
