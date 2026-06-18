@@ -20,7 +20,7 @@ function buildVocabQuestion(level: Level) {
   const word = pool[Math.floor(Math.random() * pool.length)]
   const others = pool.filter(v => v.id !== word.id && v.english !== word.english).sort(() => Math.random() - 0.5).slice(0, 3)
   const options = shuffle([...others.map(v => v.english), word.english])
-  return { prompt: word.japanese + ' (' + word.romaji + ')', options, answer: options.indexOf(word.english), explanation: word.exampleJp + ' — ' + word.exampleEn }
+  return { prompt: word.japanese + ' (' + word.romaji + ')', options, answer: options.indexOf(word.english), explanation: word.exampleJp + ' -- ' + word.exampleEn }
 }
 
 function buildKanjiQuestion(level: Level) {
@@ -28,14 +28,14 @@ function buildKanjiQuestion(level: Level) {
   const kanji = pool[Math.floor(Math.random() * pool.length)]
   const others = pool.filter(k => k.id !== kanji.id && k.meaning !== kanji.meaning).sort(() => Math.random() - 0.5).slice(0, 3)
   const options = shuffle([...others.map(k => k.meaning), kanji.meaning])
-  return { prompt: kanji.kanji, options, answer: options.indexOf(kanji.meaning), explanation: kanji.exampleWord + ' (' + kanji.exampleReading + ') — ' + kanji.exampleSentenceEn }
+  return { prompt: kanji.kanji, options, answer: options.indexOf(kanji.meaning), explanation: kanji.exampleWord + ' (' + kanji.exampleReading + ') -- ' + kanji.exampleSentenceEn }
 }
 
 function buildGrammarQuestion() {
   const questions = [
     { prompt: 'Which particle marks the topic of a sentence?', options: ['を', 'は', 'に', 'で'], answer: 1, explanation: 'は marks the topic. It is pronounced "wa" when used as a particle.' },
     { prompt: 'To express "I want to eat", use:', options: ['食べたいです', '食べています', '食べましょう', '食べてください'], answer: 0, explanation: 'たい attaches to the verb stem to express desire.' },
-    { prompt: '"Let's go!" in Japanese is:', options: ['行きたい', '行きます', '行きましょう', '行ってください'], answer: 2, explanation: 'ましょう attached to the verb stem is used for suggestions.' },
+    { prompt: '"Let\'s go!" in Japanese is:', options: ['行きたい', '行きます', '行きましょう', '行ってください'], answer: 2, explanation: 'ましょう attached to the verb stem is used for suggestions.' },
     { prompt: 'Which means "I must study"?', options: ['勉強してもいい', '勉強しなければならない', '勉強しています', '勉強したい'], answer: 1, explanation: 'なければならない expresses obligation.' },
   ]
   return questions[Math.floor(Math.random() * questions.length)]
@@ -108,7 +108,7 @@ export default function QuizPage() {
 
         <div className="grid sm:grid-cols-2 gap-4 mb-8">
           {([
-            { type: 'vocab-mc' as QuizType, title: 'Vocabulary Quiz', desc: 'Multiple choice — Japanese → English', icon: '📚', color: 'indigo' },
+            { type: 'vocab-mc' as QuizType, title: 'Vocabulary Quiz', desc: 'Multiple choice -- Japanese → English', icon: '📚', color: 'indigo' },
             { type: 'kanji-mc' as QuizType, title: 'Kanji Quiz', desc: 'Identify kanji meanings', icon: '漢', color: 'purple' },
             { type: 'grammar-mc' as QuizType, title: 'Grammar Quiz', desc: 'Test grammar knowledge', icon: '文', color: 'blue' },
             { type: 'mixed' as QuizType, title: 'Mixed Quiz', desc: 'Random vocab + kanji + grammar', icon: '🎲', color: 'pink' },

@@ -33,10 +33,10 @@ export default function ReferencePage() {
     { icon: '🔊', title: 'Read aloud', tip: 'Always say what you are studying out loud. This builds pronunciation muscle memory and helps retention.' },
     { icon: '📝', title: 'Write what you learn', tip: 'Writing kanji and vocabulary by hand dramatically improves memory compared to passive reading.' },
     { icon: '🎧', title: 'Listen every day', tip: 'Exposure to natural Japanese speech (even 10 minutes a day) builds your ear for the language quickly.' },
-    { icon: '🔁', title: 'Use spaced repetition', tip: 'Review items just before you forget them. The Review section is built for this — use it daily.' },
+    { icon: '🔁', title: 'Use spaced repetition', tip: 'Review items just before you forget them. The Review section is built for this -- use it daily.' },
     { icon: '📖', title: 'Learn vocab in context', tip: 'Always study words with their example sentences. Context makes vocabulary stick 3× faster.' },
-    { icon: '🎯', title: 'Focus on N5 first', tip: 'Don't rush to N4. A solid N5 foundation makes N4 dramatically easier to learn.' },
-    { icon: '🧩', title: 'Learn grammar patterns as chunks', tip: 'Don't memorize grammar rules in isolation. Learn full example sentences as patterns you can reuse.' },
+    { icon: '🎯', title: 'Focus on N5 first', tip: 'Don\'t rush to N4. A solid N5 foundation makes N4 dramatically easier to learn.' },
+    { icon: '🧩', title: 'Learn grammar patterns as chunks', tip: 'Don\'t memorize grammar rules in isolation. Learn full example sentences as patterns you can reuse.' },
   ]
 
   return (

@@ -89,7 +89,7 @@ export default function KanjiPage() {
                         <div className="jp font-semibold text-gray-800 dark:text-gray-200">{k.onyomi}</div>
                       </div>
                       <div className="bg-white dark:bg-gray-700 rounded-xl p-3">
-                        <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Kun'yomi (訓読み)</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Kun\'yomi (訓読み)</div>
                         <div className="jp font-semibold text-gray-800 dark:text-gray-200">{k.kunyomi}</div>
                       </div>
                     </div>
@@ -127,7 +127,7 @@ export default function KanjiPage() {
           <div className="grid grid-cols-2 gap-3">
             {getOptions().map(opt => (
               <button key={opt} onClick={() => !quizAnswer && handleAnswer(opt)}
-                className={`py-3 px-4 rounded-xl font-semibold text-sm border-2 transition-all ${quizAnswer ? opt === current.meaning ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700' : opt === quizAnswer ? 'border-red-400 bg-red-50 dark:bg-red-900/20 text-red-600' : 'border-gray-100 dark:border-gray-700 text-gray-400' : 'border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-brand-indigo hover:bg-indigo-50 dark:hover:bg-indigo-900/10'}`}>
+                className={`py-3 px-4 rounded-xl font-semibold text-sm border-2 transition-all ${quizAnswer ? opt === current.meaning ? \'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700' : opt === quizAnswer ? 'border-red-400 bg-red-50 dark:bg-red-900/20 text-red-600' : 'border-gray-100 dark:border-gray-700 text-gray-400' : 'border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-brand-indigo hover:bg-indigo-50 dark:hover:bg-indigo-900/10'}`}>
                 {opt}
               </button>
             ))}

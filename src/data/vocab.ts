@@ -58,8 +58,8 @@ export const vocabData: VocabWord[] = [
   { id:'v001',japanese:'こんにちは',furigana:'こんにちは',romaji:'konnichiwa',english:'Hello',level:'N5',category:'Greetings',exampleJp:'こんにちは、田中さん。',exampleEn:'Hello, Mr. Tanaka.',learned:false,weak:false,saved:false},
   { id:'v002',japanese:'ありがとう',furigana:'ありがとう',romaji:'arigatou',english:'Thank you',level:'N5',category:'Greetings',exampleJp:'ありがとうございます。',exampleEn:'Thank you very much.',learned:false,weak:false,saved:false},
   { id:'v003',japanese:'すみません',furigana:'すみません',romaji:'sumimasen',english:'Excuse me / Sorry',level:'N5',category:'Greetings',exampleJp:'すみません、駅はどこですか？',exampleEn:'Excuse me, where is the station?',learned:false,weak:false,saved:false},
-  { id:'v004',japanese:'はい',furigana:'はい',romaji:'hai',english:'Yes',level:'N5',category:'Greetings',exampleJp:'はい、そうです。',exampleEn:'Yes, that's right.',learned:false,weak:false,saved:false},
-  { id:'v005',japanese:'いいえ',furigana:'いいえ',romaji:'iie',english:'No',level:'N5',category:'Greetings',exampleJp:'いいえ、ちがいます。',exampleEn:'No, that's wrong.',learned:false,weak:false,saved:false},
+  { id:'v004',japanese:'はい',furigana:'はい',romaji:'hai',english:'Yes',level:'N5',category:'Greetings',exampleJp:'はい、そうです。',exampleEn:'Yes, that\'s right.',learned:false,weak:false,saved:false},
+  { id:'v005',japanese:'いいえ',furigana:'いいえ',romaji:'iie',english:'No',level:'N5',category:'Greetings',exampleJp:'いいえ、ちがいます。',exampleEn:'No, that\'s wrong.',learned:false,weak:false,saved:false},
   // Family
   { id:'v006',japanese:'おかあさん',furigana:'お母さん',romaji:'okaasan',english:'Mother',level:'N5',category:'Family',exampleJp:'おかあさんは料理が上手です。',exampleEn:'My mother is good at cooking.',learned:false,weak:false,saved:false},
   { id:'v007',japanese:'おとうさん',furigana:'お父さん',romaji:'otousan',english:'Father',level:'N5',category:'Family',exampleJp:'おとうさんは会社員です。',exampleEn:'My father is a company employee.',learned:false,weak:false,saved:false},
@@ -103,7 +103,7 @@ export const vocabData: VocabWord[] = [
   { id:'v039',japanese:'しごと',furigana:'仕事',romaji:'shigoto',english:'Work / job',level:'N5',category:'Work',exampleJp:'しごとはたのしいです。',exampleEn:'Work is fun.',learned:false,weak:false,saved:false},
   { id:'v040',japanese:'かいしゃ',furigana:'会社',romaji:'kaisha',english:'Company',level:'N5',category:'Work',exampleJp:'かいしゃにいきます。',exampleEn:'I go to the company.',learned:false,weak:false,saved:false},
   // Weather
-  { id:'v041',japanese:'てんき',furigana:'天気',romaji:'tenki',english:'Weather',level:'N5',category:'Weather',exampleJp:'きょうのてんきはどうですか？',exampleEn:'How is today's weather?',learned:false,weak:false,saved:false},
+  { id:'v041',japanese:'てんき',furigana:'天気',romaji:'tenki',english:'Weather',level:'N5',category:'Weather',exampleJp:'きょうのてんきはどうですか？',exampleEn:'How is today\'s weather?',learned:false,weak:false,saved:false},
   { id:'v042',japanese:'あめ',furigana:'雨',romaji:'ame',english:'Rain',level:'N5',category:'Weather',exampleJp:'あめがふっています。',exampleEn:'It is raining.',learned:false,weak:false,saved:false},
   { id:'v043',japanese:'はれ',furigana:'晴れ',romaji:'hare',english:'Sunny',level:'N5',category:'Weather',exampleJp:'きょうははれです。',exampleEn:'Today is sunny.',learned:false,weak:false,saved:false},
   // Numbers & misc
