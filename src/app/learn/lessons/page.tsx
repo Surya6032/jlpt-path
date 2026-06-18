@@ -20,62 +20,207 @@ function shuffle<T>(arr: T[]): T[] {
   return [...arr].sort(() => Math.random() - 0.5)
 }
 
-// ── Cat Mascot ────────────────────────────────────────────────────────────────
+// ── Cat Mascot (3D SVG + CSS, Duolingo-style) ──────────────────────────────────────────────────────
 type CatMood = 'idle' | 'happy' | 'sad' | 'excited' | 'thinking'
 
+const CAT_STYLES = `
+@keyframes catBob    { 0%,100%{transform:translateY(0)}  50%{transform:translateY(-6px)} }
+@keyframes catShake  { 0%,100%{transform:rotate(0deg)}   25%{transform:rotate(-8deg)} 75%{transform:rotate(8deg)} }
+@keyframes catJump   { 0%,100%{transform:translateY(0) scale(1)} 40%{transform:translateY(-18px) scale(1.08,0.93)} 60%{transform:translateY(-18px) scale(0.93,1.08)} }
+@keyframes tailWag   { 0%,100%{transform:rotate(-20deg) } 50%{transform:rotate(20deg)} }
+@keyframes tailDroop { 0%,100%{transform:rotate(40deg)}  50%{transform:rotate(60deg)} }
+@keyframes blinkEye  { 0%,90%,100%{transform:scaleY(1)}  95%{transform:scaleY(0.1)} }
+@keyframes pupilMove { 0%,100%{transform:translateX(0)}  50%{transform:translateX(2px)} }
+@keyframes breathe   { 0%,100%{transform:scaleX(1)}      50%{transform:scaleX(1.04)} }
+@keyframes starSpin  { 0%{transform:rotate(0deg) scale(0)} 50%{transform:rotate(180deg) scale(1.2)} 100%{transform:rotate(360deg) scale(0)} }
+@keyframes tearDrop  { 0%{opacity:0;transform:translateY(0)} 20%{opacity:1} 100%{opacity:0;transform:translateY(16px)} }
+@keyframes blushPulse{ 0%,100%{opacity:0.55} 50%{opacity:0.9} }
+.cat-bob     { animation: catBob   1.8s ease-in-out infinite }
+.cat-shake   { animation: catShake 0.5s ease-in-out 2 }
+.cat-jump    { animation: catJump  0.6s ease-in-out 1 }
+.cat-blink   { animation: blinkEye 3.5s ease-in-out infinite }
+.cat-pupil   { animation: pupilMove 2.5s ease-in-out infinite }
+.cat-breathe { animation: breathe  2s ease-in-out infinite }
+.tail-wag    { transform-origin: 0% 100%; animation: tailWag  0.5s ease-in-out infinite }
+.tail-droop  { transform-origin: 0% 100%; animation: tailDroop 1.5s ease-in-out infinite }
+.star-spin   { animation: starSpin 0.8s ease-out forwards }
+.tear-drop   { animation: tearDrop 1.2s ease-in forwards }
+.blush-pulse { animation: blushPulse 1.5s ease-in-out infinite }
+`
+
 function CatMascot({ mood = 'idle' }: { mood?: CatMood }) {
-  const expressions: Record<CatMood, { eyes: string; mouth: string; tail: string; msg: string }> = {
-    idle:     { eyes: '◕ ◕', mouth: 'ω', tail: '~',  msg: 'Let\'s learn Japanese!' },
-    happy:    { eyes: '＾ ＾', mouth: '∇', tail: '≈',  msg: 'Correct! Nyan~!' },
-    sad:      { eyes: '× ×', mouth: 'ε', tail: '.',  msg: 'Oops! Try again!' },
-    excited:  { eyes: '★ ★', mouth: '▽', tail: '≋',  msg: 'You\'re on fire! 🔥' },
-    thinking: { eyes: '- ◕', mouth: '3', tail: '?',  msg: 'Hmm, think carefully...' },
+  const bodyAnim  = mood === 'happy' || mood === 'excited' ? 'cat-jump'  : mood === 'sad' ? 'cat-shake' : 'cat-bob'
+  const tailClass = mood === 'happy' || mood === 'excited' ? 'tail-wag'  : 'tail-droop'
+  const showStars = mood === 'happy' || mood === 'excited'
+  const showTear  = mood === 'sad'
+  const blush     = mood === 'happy' || mood === 'excited'
+
+  // Eye shapes per mood
+  const eyeConfig: Record<CatMood, { left: string; right: string }> = {
+    idle:     { left: 'M4,8 Q8,3 12,8 Q8,13 4,8Z', right: 'M4,8 Q8,3 12,8 Q8,13 4,8Z' },
+    happy:    { left: 'M2,9 Q8,2 14,9',             right: 'M2,9 Q8,2 14,9' },
+    sad:      { left: 'M2,7 Q8,13 14,7',            right: 'M2,7 Q8,13 14,7' },
+    excited:  { left: 'M4,8 Q8,1 12,8 Q8,15 4,8Z', right: 'M4,8 Q8,1 12,8 Q8,15 4,8Z' },
+    thinking: { left: 'M4,8 Q8,3 12,8 Q8,13 4,8Z', right: 'M3,9 Q8,4 13,9' },
   }
-  const e = expressions[mood]
-  const tailAnim = mood === 'happy' || mood === 'excited' ? 'animate-bounce' : ''
+
+  const mouthConfig: Record<CatMood, string> = {
+    idle:     'M5,10 Q8,13 11,10',
+    happy:    'M4,9  Q8,15 12,9',
+    sad:      'M4,11 Q8,7  12,11',
+    excited:  'M3,9  Q8,16 13,9',
+    thinking: 'M6,10 Q8,12 10,10',
+  }
+
+  const msgs: Record<CatMood, string> = {
+    idle:     "Let's learn Japanese! にゃ～",
+    happy:    'Correct! Great job! ✨',
+    sad:      'Oops! You can do it! 💪',
+    excited:  'On a streak! 🔥 Amazing!',
+    thinking: 'Think carefully… にゃ？',
+  }
+
+  const eyeL = eyeConfig[mood].left
+  const eyeR = eyeConfig[mood].right
+  const mouth = mouthConfig[mood]
+  const isHappyOrExcited = mood === 'happy' || mood === 'excited'
 
   return (
-    <div className="flex flex-col items-center select-none">
-      <div className="relative">
-        {/* Body */}
-        <div className="w-20 h-16 bg-gradient-to-b from-purple-300 to-purple-400 dark:from-purple-600 dark:to-purple-700 rounded-3xl flex items-center justify-center shadow-lg relative">
-          {/* Ears */}
-          <div className="absolute -top-4 left-2 w-0 h-0 border-l-[10px] border-r-[10px] border-b-[16px] border-l-transparent border-r-transparent border-b-purple-400 dark:border-b-purple-600" />
-          <div className="absolute -top-4 right-2 w-0 h-0 border-l-[10px] border-r-[10px] border-b-[16px] border-l-transparent border-r-transparent border-b-purple-400 dark:border-b-purple-600" />
-          {/* Inner ears */}
-          <div className="absolute -top-3 left-2.5 w-0 h-0 border-l-[6px] border-r-[6px] border-b-[10px] border-l-transparent border-r-transparent border-b-pink-300" />
-          <div className="absolute -top-3 right-2.5 w-0 h-0 border-l-[6px] border-r-[6px] border-b-[10px] border-l-transparent border-r-transparent border-b-pink-300" />
-          {/* Face */}
-          <div className="text-center">
-            <div className="text-xs font-bold text-white leading-tight">{e.eyes}</div>
-            <div className="text-xs text-white">{e.mouth}</div>
-          </div>
-          {/* Whiskers */}
-          <div className="absolute left-0 top-7 flex flex-col gap-0.5 -translate-x-2">
-            <div className="w-3 h-px bg-white/70" />
-            <div className="w-4 h-px bg-white/70" />
-            <div className="w-3 h-px bg-white/70" />
-          </div>
-          <div className="absolute right-0 top-7 flex flex-col gap-0.5 translate-x-2">
-            <div className="w-3 h-px bg-white/70" />
-            <div className="w-4 h-px bg-white/70" />
-            <div className="w-3 h-px bg-white/70" />
-          </div>
-        </div>
-        {/* Tail */}
-        <div className={`absolute -bottom-2 -right-4 text-purple-400 dark:text-purple-500 font-bold text-lg ${tailAnim}`}>
-          {e.tail}
-        </div>
-        {/* Paws */}
-        <div className="flex justify-center gap-3 mt-1">
-          <div className="w-5 h-3 bg-purple-300 dark:bg-purple-600 rounded-full" />
-          <div className="w-5 h-3 bg-purple-300 dark:bg-purple-600 rounded-full" />
-        </div>
-      </div>
+    <div className="flex flex-col items-center gap-2 select-none">
+      <style>{CAT_STYLES}</style>
+
       {/* Speech bubble */}
-      <div className="mt-3 bg-white dark:bg-gray-800 border-2 border-purple-300 dark:border-purple-600 rounded-2xl px-3 py-1.5 text-xs font-semibold text-purple-700 dark:text-purple-300 shadow relative">
-        <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-b-[8px] border-l-transparent border-r-transparent border-b-purple-300 dark:border-b-purple-600" />
-        {e.msg}
+      <div className="relative bg-white dark:bg-gray-800 border-2 border-purple-300 dark:border-purple-600 rounded-2xl px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-200 shadow-md max-w-[220px] text-center">
+        {msgs[mood]}
+        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[8px] border-r-[8px] border-t-[8px] border-l-transparent border-r-transparent border-t-purple-300 dark:border-t-purple-600" />
+      </div>
+
+      {/* Cat SVG */}
+      <div className={bodyAnim} style={{filter:'drop-shadow(0 8px 16px rgba(109,40,217,0.35))'}}>
+        <svg width="140" height="180" viewBox="0 0 140 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            {/* Body gradient — gives 3D depth */}
+            <radialGradient id="bodyGrad" cx="38%" cy="35%" r="62%">
+              <stop offset="0%"   stopColor="#c4b5fd"/>
+              <stop offset="55%"  stopColor="#7c3aed"/>
+              <stop offset="100%" stopColor="#4c1d95"/>
+            </radialGradient>
+            {/* Belly gradient */}
+            <radialGradient id="bellyGrad" cx="50%" cy="40%" r="55%">
+              <stop offset="0%"   stopColor="#ede9fe"/>
+              <stop offset="100%" stopColor="#ddd6fe"/>
+            </radialGradient>
+            {/* Ear inner gradient */}
+            <radialGradient id="earGrad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%"   stopColor="#fbcfe8"/>
+              <stop offset="100%" stopColor="#f9a8d4"/>
+            </radialGradient>
+            {/* Paw gradient */}
+            <radialGradient id="pawGrad" cx="40%" cy="35%" r="60%">
+              <stop offset="0%"   stopColor="#c4b5fd"/>
+              <stop offset="100%" stopColor="#6d28d9"/>
+            </radialGradient>
+          </defs>
+
+          {/* ── Tail ── */}
+          <g className={tailClass}>
+            <path d="M105,150 Q140,130 130,100 Q120,75 110,90" stroke="#6d28d9" strokeWidth="10" strokeLinecap="round" fill="none"/>
+            <path d="M105,150 Q140,130 130,100 Q120,75 110,90" stroke="#a78bfa" strokeWidth="4" strokeLinecap="round" fill="none" opacity="0.5"/>
+          </g>
+
+          {/* ── Body ── */}
+          <ellipse className="cat-breathe" cx="70" cy="130" rx="42" ry="38" fill="url(#bodyGrad)"/>
+          {/* Belly */}
+          <ellipse cx="70" cy="138" rx="24" ry="22" fill="url(#bellyGrad)" opacity="0.9"/>
+
+          {/* ── Head ── */}
+          <circle cx="70" cy="80" r="44" fill="url(#bodyGrad)"/>
+          {/* Head highlight */}
+          <ellipse cx="52" cy="62" rx="14" ry="10" fill="white" opacity="0.18" transform="rotate(-30 52 62)"/>
+
+          {/* ── Ears ── */}
+          {/* Left ear */}
+          <polygon points="30,48 20,12 52,42" fill="#6d28d9"/>
+          <polygon points="33,46 27,20 50,43" fill="url(#earGrad)"/>
+          {/* Right ear */}
+          <polygon points="110,48 120,12 88,42" fill="#6d28d9"/>
+          <polygon points="107,46 113,20 90,43" fill="url(#earGrad)"/>
+
+          {/* ── Blush ── */}
+          {blush && <>
+            <ellipse className="blush-pulse" cx="44" cy="95" rx="10" ry="6" fill="#f9a8d4" opacity="0.6"/>
+            <ellipse className="blush-pulse" cx="96" cy="95" rx="10" ry="6" fill="#f9a8d4" opacity="0.6"/>
+          </>}
+
+          {/* ── Eyes ── */}
+          {/* Left eye white */}
+          <ellipse cx="53" cy="82" rx="13" ry="13" fill="white" opacity="0.95"/>
+          {/* Right eye white */}
+          <ellipse cx="87" cy="82" rx="13" ry="13" fill="white" opacity="0.95"/>
+
+          {/* Left eye iris */}
+          <g className="cat-blink" style={{transformOrigin:'53px 82px'}}>
+            {isHappyOrExcited
+              ? <path d={eyeL} fill="none" stroke="#4c1d95" strokeWidth="3" transform="translate(46,74)"/>
+              : mood === 'sad'
+                ? <path d={eyeL} fill="none" stroke="#4c1d95" strokeWidth="3" transform="translate(46,74)"/>
+                : <ellipse cx="53" cy="82" rx="8" ry="9" fill="#4c1d95"/>
+            }
+            {!isHappyOrExcited && mood !== 'sad' && <>
+              <ellipse className="cat-pupil" cx="53" cy="82" rx="4" ry="6" fill="#1e1b4b"/>
+              <circle cx="56" cy="78" r="2" fill="white" opacity="0.9"/>
+            </>}
+          </g>
+
+          {/* Right eye iris */}
+          <g className="cat-blink" style={{transformOrigin:'87px 82px'}}>
+            {isHappyOrExcited
+              ? <path d={eyeR} fill="none" stroke="#4c1d95" strokeWidth="3" transform="translate(80,74)"/>
+              : mood === 'sad'
+                ? <path d={eyeR} fill="none" stroke="#4c1d95" strokeWidth="3" transform="translate(80,74)"/>
+                : <ellipse cx="87" cy="82" rx="8" ry="9" fill="#4c1d95"/>
+            }
+            {!isHappyOrExcited && mood !== 'sad' && <>
+              <ellipse className="cat-pupil" cx="87" cy="82" rx="4" ry="6" fill="#1e1b4b"/>
+              <circle cx="90" cy="78" r="2" fill="white" opacity="0.9"/>
+            </>}
+          </g>
+
+          {/* ── Whiskers ── */}
+          <line x1="12" y1="88" x2="48" y2="92" stroke="white" strokeWidth="1.5" opacity="0.8"/>
+          <line x1="10" y1="96" x2="47" y2="96" stroke="white" strokeWidth="1.5" opacity="0.8"/>
+          <line x1="12" y1="104" x2="48" y2="100" stroke="white" strokeWidth="1.5" opacity="0.8"/>
+          <line x1="92" y1="92" x2="128" y2="88" stroke="white" strokeWidth="1.5" opacity="0.8"/>
+          <line x1="93" y1="96" x2="130" y2="96" stroke="white" strokeWidth="1.5" opacity="0.8"/>
+          <line x1="92" y1="100" x2="128" y2="104" stroke="white" strokeWidth="1.5" opacity="0.8"/>
+
+          {/* ── Nose & Mouth ── */}
+          <path d="M67,100 L70,104 L73,100" fill="#f9a8d4" stroke="#e879f9" strokeWidth="1"/>
+          <path d={mouth} fill="none" stroke="#6d28d9" strokeWidth="2.5" strokeLinecap="round"/>
+
+          {/* ── Paws ── */}
+          <ellipse cx="46" cy="163" rx="16" ry="10" fill="url(#pawGrad)"/>
+          <ellipse cx="94" cy="163" rx="16" ry="10" fill="url(#pawGrad)"/>
+          {/* Toe beans */}
+          <circle cx="40" cy="163" r="3.5" fill="#a78bfa" opacity="0.6"/>
+          <circle cx="46" cy="165" r="3.5" fill="#a78bfa" opacity="0.6"/>
+          <circle cx="52" cy="163" r="3.5" fill="#a78bfa" opacity="0.6"/>
+          <circle cx="88" cy="163" r="3.5" fill="#a78bfa" opacity="0.6"/>
+          <circle cx="94" cy="165" r="3.5" fill="#a78bfa" opacity="0.6"/>
+          <circle cx="100" cy="163" r="3.5" fill="#a78bfa" opacity="0.6"/>
+
+          {/* ── Excited stars ── */}
+          {showStars && <>
+            <text className="star-spin" x="18" y="42" fontSize="16" style={{transformOrigin:'26px 34px'}}>✨</text>
+            <text className="star-spin" x="106" y="38" fontSize="14" style={{transformOrigin:'113px 31px',animationDelay:'0.2s'}}>⭐</text>
+          </>}
+
+          {/* ── Sad tear ── */}
+          {showTear && <>
+            <ellipse className="tear-drop" cx="53" cy="95" rx="3" ry="5" fill="#93c5fd" opacity="0.9"/>
+            <ellipse className="tear-drop" cx="87" cy="95" rx="3" ry="5" fill="#93c5fd" opacity="0.9" style={{animationDelay:'0.3s'}}/>
+          </>}
+        </svg>
       </div>
     </div>
   )
