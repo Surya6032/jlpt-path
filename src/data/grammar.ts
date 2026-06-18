@@ -98,7 +98,7 @@ export const grammarData: GrammarPoint[] = [
     structure: '[Noun A] + の + [Noun B]',
     meaning: 'Connects two nouns — shows possession, affiliation, or description.',
     level: 'N5',
-    usageNotes: 'Similar to "'s" or "of" in English. A の B = "A's B" or "B of A".',
+    usageNotes: 'Similar to "\'s" or "of" in English. A の B = "A\'s B" or "B of A".',
     examples: [
       { jp: '私の本', furigana: 'わたしのほん', en: 'My book' },
       { jp: '日本語の先生', furigana: 'にほんごのせんせい', en: 'Japanese teacher' },
@@ -141,15 +141,15 @@ export const grammarData: GrammarPoint[] = [
     id: 'g10',
     title: '～ませんか / ～ましょう — Invitation / Suggestion',
     structure: '[Verb stem] + ませんか  /  [Verb stem] + ましょう',
-    meaning: 'ませんか = polite invitation "Won\'t you...?". ましょう = suggestion "Let\'s...".',
+    meaning: 'ませんか = polite invitation "Won't you...?". ましょう = suggestion "Let\'s...".',
     level: 'N5',
     usageNotes: 'ませんか is used to invite someone to do something together. ましょう is used to propose doing something together with more certainty.',
     examples: [
-      { jp: '一緒に食べませんか？', furigana: 'いっしょにたべませんか？', en: 'Won\'t you eat together with me?' },
+      { jp: '一緒に食べませんか？', furigana: 'いっしょにたべませんか？', en: 'Won't you eat together with me?' },
       { jp: '始めましょう。', furigana: 'はじめましょう。', en: 'Let\'s begin.' },
       { jp: '公園に行きませんか？', furigana: 'こうえんにいきませんか？', en: 'Shall we go to the park?' },
     ],
-    commonMistakes: 'Using ましょうか (seeking the other\'s preference) vs ましょう (suggesting/deciding). Both are polite but have slightly different nuances.',
+    commonMistakes: 'Using ましょうか (seeking the other's preference) vs ましょう (suggesting/deciding). Both are polite but have slightly different nuances.',
     relatedPatterns: ['g01'],
   },
   // ── N4 Grammar (10 points) ─────────────────────────────────────────────────
