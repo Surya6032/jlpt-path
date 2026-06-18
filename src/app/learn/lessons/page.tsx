@@ -413,7 +413,7 @@ export default function LessonsPage() {
             {words.length} words to learn · flashcards then a quiz
           </p>
           <div className="flex gap-3 w-full">
-            <Button variant="outline" className="flex-1" onClick={() => setScreen('map')}>← Back</Button>
+            <Button variant="secondary" className="flex-1" onClick={() => setScreen('map')}>← Back</Button>
             <Button className="flex-1" onClick={startFlashcards}>Start Lesson →</Button>
           </div>
         </div>
@@ -467,7 +467,7 @@ export default function LessonsPage() {
 
             {/* Answer hidden until revealed */}
             {!showBack ? (
-              <Button onClick={() => { setShowBack(true); triggerCatMood('happy', 1200) }} variant="outline" className="w-full">
+              <Button onClick={() => { setShowBack(true); triggerCatMood('happy', 1200) }} variant="secondary" className="w-full">
                 Show meaning
               </Button>
             ) : (
@@ -642,7 +642,7 @@ export default function LessonsPage() {
             </Card>
           </div>
           <div className="flex gap-3 w-full mt-4">
-            <Button variant="outline" className="flex-1" onClick={() => setScreen('map')}>← All Lessons</Button>
+            <Button variant="secondary" className="flex-1" onClick={() => setScreen('map')}>← All Lessons</Button>
             <Button className="flex-1" onClick={() => startUnit(activeUnit)}>Try Again</Button>
           </div>
         </div>
