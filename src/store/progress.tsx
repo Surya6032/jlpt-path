@@ -2,6 +2,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import type { UserProgress } from '@/types'
 
+// Safe dedup helper — avoids Set iteration (incompatible with es5 target)
+function dedupeAdd(arr: string[], id: string): string[] {
+  if (arr.indexOf(id) !== -1) return arr
+  return arr.concat(id)
+}
+
 const defaultProgress: UserProgress = {
   streak: 3,
   totalStudyMinutes: 142,
@@ -53,22 +59,22 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
   }, [progress])
 
   const markLessonComplete = (id: string) =>
-    setProgress(p => ({ ...p, lessonsCompleted: [...new Set([...p.lessonsCompleted, id])] }))
+    setProgress(p => ({ ...p, lessonsCompleted: dedupeAdd(p.lessonsCompleted, id) }))
 
   const markVocabLearned = (id: string) =>
-    setProgress(p => ({ ...p, vocabLearned: [...new Set([...p.vocabLearned, id])] }))
+    setProgress(p => ({ ...p, vocabLearned: dedupeAdd(p.vocabLearned, id) }))
 
   const markKanjiLearned = (id: string) =>
-    setProgress(p => ({ ...p, kanjiLearned: [...new Set([...p.kanjiLearned, id])] }))
+    setProgress(p => ({ ...p, kanjiLearned: dedupeAdd(p.kanjiLearned, id) }))
 
   const markGrammarMastered = (id: string) =>
-    setProgress(p => ({ ...p, grammarMastered: [...new Set([...p.grammarMastered, id])] }))
+    setProgress(p => ({ ...p, grammarMastered: dedupeAdd(p.grammarMastered, id) }))
 
   const addQuizScore = (topic: string, score: number) =>
     setProgress(p => ({ ...p, quizScores: [...p.quizScores, { topic, score, date: new Date().toISOString().split('T')[0] }] }))
 
   const unlockAchievement = (id: string) =>
-    setProgress(p => ({ ...p, achievements: [...new Set([...p.achievements, id])] }))
+    setProgress(p => ({ ...p, achievements: dedupeAdd(p.achievements, id) }))
 
   const addStudyMinutes = (mins: number) =>
     setProgress(p => ({ ...p, totalStudyMinutes: p.totalStudyMinutes + mins, weeklyStudiedMinutes: p.weeklyStudiedMinutes + mins }))
