@@ -103,7 +103,7 @@ export const vocabData: VocabWord[] = [
   { id:'v039',japanese:'しごと',furigana:'仕事',romaji:'shigoto',english:'Work / job',level:'N5',category:'Work',exampleJp:'しごとはたのしいです。',exampleEn:'Work is fun.',learned:false,weak:false,saved:false},
   { id:'v040',japanese:'かいしゃ',furigana:'会社',romaji:'kaisha',english:'Company',level:'N5',category:'Work',exampleJp:'かいしゃにいきます。',exampleEn:'I go to the company.',learned:false,weak:false,saved:false},
   // Weather
-  { id:'v041',japanese:'てんき',furigana:'天気',romaji:'tenki',english:'Weather',level:'N5',category:'Weather',exampleJp:'きょうのてんきはどうですか？',exampleEn:'How is today's weather?',learned:false,weak:false,saved:false},
+  { id:'v041',japanese:'てんき',furigana:'天気',romaji:'tenki',english:'Weather',level:'N5',category:'Weather',exampleJp:'きょうのてんきはどうですか？',exampleEn:'How is today\'s weather?',learned:false,weak:false,saved:false},
   { id:'v042',japanese:'あめ',furigana:'雨',romaji:'ame',english:'Rain',level:'N5',category:'Weather',exampleJp:'あめがふっています。',exampleEn:'It is raining.',learned:false,weak:false,saved:false},
   { id:'v043',japanese:'はれ',furigana:'晴れ',romaji:'hare',english:'Sunny',level:'N5',category:'Weather',exampleJp:'きょうははれです。',exampleEn:'Today is sunny.',learned:false,weak:false,saved:false},
   // Numbers & misc
