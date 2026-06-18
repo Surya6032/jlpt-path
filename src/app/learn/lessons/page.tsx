@@ -383,9 +383,7 @@ export default function LessonsPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-gray-900 dark:text-white">{unit.title}</span>
-                      <Badge variant={unit.level === 'N5' ? 'default' : 'secondary'} className="text-xs">
-                        {unit.level}
-                      </Badge>
+                      <Badge label={unit.level} variant={unit.level === 'N5' ? 'default' : 'warning'} className="text-xs" />
                     </div>
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                       {vocabData.filter(v => v.category === unit.category).length} words
