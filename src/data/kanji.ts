@@ -1,0 +1,48 @@
+import type { KanjiItem } from '@/types'
+
+export const kanjiData: KanjiItem[] = [
+  // ── N5 Kanji (20) ──────────────────────────────────────────────────────────
+  { id:'kj01', kanji:'日', meaning:'Sun / Day', onyomi:'ニチ、ジツ', kunyomi:'ひ、か', level:'N5', exampleWord:'日本', exampleReading:'にほん', exampleSentenceJp:'日本語を勉強しています。', exampleSentenceEn:'I am studying Japanese.', saved:false },
+  { id:'kj02', kanji:'月', meaning:'Moon / Month', onyomi:'ゲツ、ガツ', kunyomi:'つき', level:'N5', exampleWord:'月曜日', exampleReading:'げつようび', exampleSentenceJp:'月曜日は忙しいです。', exampleSentenceEn:'Monday is busy.', saved:false },
+  { id:'kj03', kanji:'火', meaning:'Fire', onyomi:'カ', kunyomi:'ひ', level:'N5', exampleWord:'火曜日', exampleReading:'かようび', exampleSentenceJp:'火曜日に授業があります。', exampleSentenceEn:'I have class on Tuesday.', saved:false },
+  { id:'kj04', kanji:'水', meaning:'Water', onyomi:'スイ', kunyomi:'みず', level:'N5', exampleWord:'水曜日', exampleReading:'すいようび', exampleSentenceJp:'水曜日に図書館へ行きます。', exampleSentenceEn:'I go to the library on Wednesday.', saved:false },
+  { id:'kj05', kanji:'山', meaning:'Mountain', onyomi:'サン', kunyomi:'やま', level:'N5', exampleWord:'富士山', exampleReading:'ふじさん', exampleSentenceJp:'富士山は高いです。', exampleSentenceEn:'Mt. Fuji is high.', saved:false },
+  { id:'kj06', kanji:'川', meaning:'River', onyomi:'セン', kunyomi:'かわ', level:'N5', exampleWord:'川', exampleReading:'かわ', exampleSentenceJp:'川の近くに住んでいます。', exampleSentenceEn:'I live near a river.', saved:false },
+  { id:'kj07', kanji:'人', meaning:'Person', onyomi:'ジン、ニン', kunyomi:'ひと', level:'N5', exampleWord:'日本人', exampleReading:'にほんじん', exampleSentenceJp:'あの人は日本人です。', exampleSentenceEn:'That person is Japanese.', saved:false },
+  { id:'kj08', kanji:'大', meaning:'Big / Large', onyomi:'ダイ、タイ', kunyomi:'おお', level:'N5', exampleWord:'大学', exampleReading:'だいがく', exampleSentenceJp:'大学で日本語を勉強します。', exampleSentenceEn:'I study Japanese at university.', saved:false },
+  { id:'kj09', kanji:'小', meaning:'Small / Little', onyomi:'ショウ', kunyomi:'ちい、こ', level:'N5', exampleWord:'小学生', exampleReading:'しょうがくせい', exampleSentenceJp:'小学生は六歳から始めます。', exampleSentenceEn:'Elementary school students start at age 6.', saved:false },
+  { id:'kj10', kanji:'上', meaning:'Up / Above', onyomi:'ジョウ', kunyomi:'うえ、あ', level:'N5', exampleWord:'上手', exampleReading:'じょうず', exampleSentenceJp:'日本語が上手ですね。', exampleSentenceEn:'Your Japanese is good, isn't it.', saved:false },
+  { id:'kj11', kanji:'下', meaning:'Down / Below', onyomi:'カ、ゲ', kunyomi:'した、さ', level:'N5', exampleWord:'下手', exampleReading:'へた', exampleSentenceJp:'私は歌が下手です。', exampleSentenceEn:'I am bad at singing.', saved:false },
+  { id:'kj12', kanji:'中', meaning:'Middle / Inside', onyomi:'チュウ', kunyomi:'なか', level:'N5', exampleWord:'中学生', exampleReading:'ちゅうがくせい', exampleSentenceJp:'中学生の時、サッカーをしました。', exampleSentenceEn:'When I was a middle schooler, I played soccer.', saved:false },
+  { id:'kj13', kanji:'本', meaning:'Book / Origin', onyomi:'ホン', kunyomi:'もと', level:'N5', exampleWord:'本', exampleReading:'ほん', exampleSentenceJp:'この本は面白いです。', exampleSentenceEn:'This book is interesting.', saved:false },
+  { id:'kj14', kanji:'一', meaning:'One', onyomi:'イチ、イツ', kunyomi:'ひと', level:'N5', exampleWord:'一人', exampleReading:'ひとり', exampleSentenceJp:'一人で旅行します。', exampleSentenceEn:'I travel alone.', saved:false },
+  { id:'kj15', kanji:'二', meaning:'Two', onyomi:'ニ', kunyomi:'ふた', level:'N5', exampleWord:'二人', exampleReading:'ふたり', exampleSentenceJp:'二人で食べます。', exampleSentenceEn:'We eat together (two people).', saved:false },
+  { id:'kj16', kanji:'学', meaning:'Study / Learn', onyomi:'ガク', kunyomi:'まな', level:'N5', exampleWord:'学校', exampleReading:'がっこう', exampleSentenceJp:'学校は九時に始まります。', exampleSentenceEn:'School starts at 9 o'clock.', saved:false },
+  { id:'kj17', kanji:'生', meaning:'Life / Born', onyomi:'セイ、ショウ', kunyomi:'い、う、き', level:'N5', exampleWord:'先生', exampleReading:'せんせい', exampleSentenceJp:'先生は優しいです。', exampleSentenceEn:'The teacher is kind.', saved:false },
+  { id:'kj18', kanji:'語', meaning:'Language / Word', onyomi:'ゴ', kunyomi:'かた', level:'N5', exampleWord:'日本語', exampleReading:'にほんご', exampleSentenceJp:'日本語は楽しいです。', exampleSentenceEn:'Japanese is fun.', saved:false },
+  { id:'kj19', kanji:'年', meaning:'Year', onyomi:'ネン', kunyomi:'とし', level:'N5', exampleWord:'今年', exampleReading:'ことし', exampleSentenceJp:'今年はJLPTを受けます。', exampleSentenceEn:'This year I will take the JLPT.', saved:false },
+  { id:'kj20', kanji:'国', meaning:'Country', onyomi:'コク', kunyomi:'くに', level:'N5', exampleWord:'外国', exampleReading:'がいこく', exampleSentenceJp:'外国へ行きたいです。', exampleSentenceEn:'I want to go to a foreign country.', saved:false },
+  // ── N4 Kanji (20) ──────────────────────────────────────────────────────────
+  { id:'kj21', kanji:'運', meaning:'Carry / Luck', onyomi:'ウン', kunyomi:'はこ', level:'N4', exampleWord:'運動', exampleReading:'うんどう', exampleSentenceJp:'毎日運動しています。', exampleSentenceEn:'I exercise every day.', saved:false },
+  { id:'kj22', kanji:'動', meaning:'Move', onyomi:'ドウ', kunyomi:'うご', level:'N4', exampleWord:'自動車', exampleReading:'じどうしゃ', exampleSentenceJp:'自動車で来ました。', exampleSentenceEn:'I came by car.', saved:false },
+  { id:'kj23', kanji:'会', meaning:'Meet / Association', onyomi:'カイ、エ', kunyomi:'あ', level:'N4', exampleWord:'会議', exampleReading:'かいぎ', exampleSentenceJp:'会議は午後二時です。', exampleSentenceEn:'The meeting is at 2 PM.', saved:false },
+  { id:'kj24', kanji:'社', meaning:'Company / Society', onyomi:'シャ', kunyomi:'やしろ', level:'N4', exampleWord:'会社', exampleReading:'かいしゃ', exampleSentenceJp:'会社まで電車で行きます。', exampleSentenceEn:'I go to the company by train.', saved:false },
+  { id:'kj25', kanji:'場', meaning:'Place / Scene', onyomi:'ジョウ', kunyomi:'ば', level:'N4', exampleWord:'場所', exampleReading:'ばしょ', exampleSentenceJp:'待ち合わせ場所はここです。', exampleSentenceEn:'The meeting place is here.', saved:false },
+  { id:'kj26', kanji:'電', meaning:'Electricity', onyomi:'デン', kunyomi:'—', level:'N4', exampleWord:'電話', exampleReading:'でんわ', exampleSentenceJp:'電話してください。', exampleSentenceEn:'Please call me.', saved:false },
+  { id:'kj27', kanji:'車', meaning:'Vehicle', onyomi:'シャ', kunyomi:'くるま', level:'N4', exampleWord:'電車', exampleReading:'でんしゃ', exampleSentenceJp:'電車は便利です。', exampleSentenceEn:'The train is convenient.', saved:false },
+  { id:'kj28', kanji:'道', meaning:'Road / Way', onyomi:'ドウ', kunyomi:'みち', level:'N4', exampleWord:'道路', exampleReading:'どうろ', exampleSentenceJp:'この道路は広いです。', exampleSentenceEn:'This road is wide.', saved:false },
+  { id:'kj29', kanji:'聞', meaning:'Listen / Ask', onyomi:'ブン、モン', kunyomi:'き', level:'N4', exampleWord:'聞く', exampleReading:'きく', exampleSentenceJp:'質問を聞いてください。', exampleSentenceEn:'Please listen to the question.', saved:false },
+  { id:'kj30', kanji:'読', meaning:'Read', onyomi:'ドク、トク', kunyomi:'よ', level:'N4', exampleWord:'読む', exampleReading:'よむ', exampleSentenceJp:'本を読むのが好きです。', exampleSentenceEn:'I like reading books.', saved:false },
+  { id:'kj31', kanji:'書', meaning:'Write', onyomi:'ショ', kunyomi:'か', level:'N4', exampleWord:'書く', exampleReading:'かく', exampleSentenceJp:'漢字を書く練習をします。', exampleSentenceEn:'I practice writing kanji.', saved:false },
+  { id:'kj32', kanji:'話', meaning:'Talk / Story', onyomi:'ワ', kunyomi:'はな', level:'N4', exampleWord:'電話', exampleReading:'でんわ', exampleSentenceJp:'日本語で話しましょう。', exampleSentenceEn:'Let's speak in Japanese.', saved:false },
+  { id:'kj33', kanji:'食', meaning:'Eat / Food', onyomi:'ショク', kunyomi:'た', level:'N4', exampleWord:'食べ物', exampleReading:'たべもの', exampleSentenceJp:'食べ物の写真を撮ります。', exampleSentenceEn:'I take photos of food.', saved:false },
+  { id:'kj34', kanji:'飲', meaning:'Drink', onyomi:'イン', kunyomi:'の', level:'N4', exampleWord:'飲み物', exampleReading:'のみもの', exampleSentenceJp:'飲み物は何がいいですか？', exampleSentenceEn:'What would you like to drink?', saved:false },
+  { id:'kj35', kanji:'買', meaning:'Buy', onyomi:'バイ', kunyomi:'か', level:'N4', exampleWord:'買い物', exampleReading:'かいもの', exampleSentenceJp:'スーパーで買い物します。', exampleSentenceEn:'I shop at the supermarket.', saved:false },
+  { id:'kj36', kanji:'売', meaning:'Sell', onyomi:'バイ', kunyomi:'う', level:'N4', exampleWord:'販売', exampleReading:'はんばい', exampleSentenceJp:'この店で本を販売しています。', exampleSentenceEn:'This shop sells books.', saved:false },
+  { id:'kj37', kanji:'持', meaning:'Hold / Carry', onyomi:'ジ', kunyomi:'も', level:'N4', exampleWord:'持つ', exampleReading:'もつ', exampleSentenceJp:'荷物を持ちましょうか？', exampleSentenceEn:'Shall I carry your luggage?', saved:false },
+  { id:'kj38', kanji:'使', meaning:'Use', onyomi:'シ', kunyomi:'つか', level:'N4', exampleWord:'使う', exampleReading:'つかう', exampleSentenceJp:'辞書を使って調べます。', exampleSentenceEn:'I look it up using a dictionary.', saved:false },
+  { id:'kj39', kanji:'始', meaning:'Begin', onyomi:'シ', kunyomi:'はじ', level:'N4', exampleWord:'始める', exampleReading:'はじめる', exampleSentenceJp:'授業を始めます。', exampleSentenceEn:'I start the class.', saved:false },
+  { id:'kj40', kanji:'終', meaning:'End / Finish', onyomi:'シュウ', kunyomi:'お', level:'N4', exampleWord:'終わる', exampleReading:'おわる', exampleSentenceJp:'仕事が終わりました。', exampleSentenceEn:'Work has finished.', saved:false },
+]
+
+export default kanjiData

@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 255, 251, 245;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 15, 15, 20;
+    --background-end-rgb: 25, 25, 35;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(to bottom, rgb(var(--background-start-rgb)), rgb(var(--background-end-rgb)));
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+}
+
+.jp { font-family: 'Noto Sans JP', sans-serif; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c7c7c7; border-radius: 3px; }
+.dark ::-webkit-scrollbar-thumb { background: #444; }
+
+/* Progress bar */
+.progress-bar {
+  transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* Card hover effect */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+}
+.dark .card-hover:hover {
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
