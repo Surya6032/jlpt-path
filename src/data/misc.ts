@@ -59,7 +59,7 @@ export const readingPassages: ReadingPassage[] = [
     questions: [
       { question: 'How long does it take to get to Kyoto from Tokyo by Shinkansen?', options: ['About 1 hour', 'About 2 hours 15 minutes', 'About 3 hours', 'About 4 hours'], answer: 1 },
       { question: 'What will they do on the second day?', options: ['Visit Kinkakuji', 'Shop at a market', 'Walk around Arashiyama', 'Return to Tokyo'], answer: 2 },
-      { question: 'Has the author already booked a hotel?', options: ['No, not yet', 'Yes, already booked', 'They will stay at a friend's house', 'Not mentioned'], answer: 1 },
+      { question: 'Has the author already booked a hotel?', options: ['No, not yet', 'Yes, already booked', 'They will stay at a friend\'s house', 'Not mentioned'], answer: 1 },
     ],
   },
   {
@@ -84,12 +84,7 @@ export const listeningExercises: ListeningExercise[] = [
   {
     id: 'l01', title: 'At the Train Station', level: 'N5', topic: 'Travel',
     audioSrc: '/audio/l01.mp3',
-    transcript: 'A: すみません、東京駅はどこですか？
-B: ああ、あそこの信号を左に曲がると、右側にありますよ。
-A: ありがとうございます。歩いて何分くらいかかりますか？
-B: だいたい五分くらいです。
-A: そうですか。ありがとうございました。
-B: いいえ、どういたしまして。',
+    transcript: 'A: すみません、東京駅はどこですか？\nB: ああ、あそこの信号を左に曲がると、右側にありますよ。\nA: ありがとうございます。歩いて何分くらいかかりますか？\nB: だいたい五分くらいです。\nA: そうですか。ありがとうございました。\nB: いいえ、どういたしまして。',
     questions: [
       { question: 'What is the person looking for?', options: ['A convenience store', 'Tokyo Station', 'A restaurant', 'A hospital'], answer: 1 },
       { question: 'How long does it take to walk there?', options: ['About 2 minutes', 'About 5 minutes', 'About 10 minutes', 'About 15 minutes'], answer: 1 },
@@ -99,11 +94,7 @@ B: いいえ、どういたしまして。',
   {
     id: 'l02', title: 'Ordering Food at a Restaurant', level: 'N5', topic: 'Food',
     audioSrc: '/audio/l02.mp3',
-    transcript: 'ウェイター：いらっしゃいませ。ご注文はお決まりですか？
-お客さん：えーと、ラーメンと餃子をひとつずつください。
-ウェイター：お飲み物はいかがですか？
-お客さん：お茶をお願いします。
-ウェイター：かしこまりました。少々お待ちください。',
+    transcript: 'ウェイター：いらっしゃいませ。ご注文はお決まりですか？\nお客さん：えーと、ラーメンと餃子をひとつずつください。\nウェイター：お飲み物はいかがですか？\nお客さん：お茶をお願いします。\nウェイター：かしこまりました。少々お待ちください。',
     questions: [
       { question: 'What did the customer order to eat?', options: ['Sushi and tempura', 'Ramen and gyoza', 'Udon and rice', 'Curry and salad'], answer: 1 },
       { question: 'What drink did the customer order?', options: ['Water', 'Coffee', 'Tea', 'Juice'], answer: 2 },
@@ -113,12 +104,7 @@ B: いいえ、どういたしまして。',
   {
     id: 'l03', title: 'A Phone Conversation', level: 'N5', topic: 'Daily Life',
     audioSrc: '/audio/l03.mp3',
-    transcript: 'A：もしもし、田中です。
-B：あ、田中さん！明日の会議、何時からでしたっけ？
-A：午後二時からです。場所は三階の会議室ですよ。
-B：あ、そうですか。ありがとうございます。
-A：はい、では明日よろしくお願いします。
-B：はい、失礼します。',
+    transcript: 'A：もしもし、田中です。\nB：あ、田中さん！明日の会議、何時からでしたっけ？\nA：午後二時からです。場所は三階の会議室ですよ。\nB：あ、そうですか。ありがとうございます。\nA：はい、では明日よろしくお願いします。\nB：はい、失礼します。',
     questions: [
       { question: 'What time is the meeting tomorrow?', options: ['10 AM', '1 PM', '2 PM', '3 PM'], answer: 2 },
       { question: 'Where is the meeting room?', options: ['1st floor', '2nd floor', '3rd floor', '4th floor'], answer: 2 },
@@ -128,13 +114,9 @@ B：はい、失礼します。',
   {
     id: 'l04', title: 'Talking About Hobbies', level: 'N4', topic: 'Hobbies',
     audioSrc: '/audio/l04.mp3',
-    transcript: 'A：田中さんは趣味は何ですか？
-B：私は写真を撮るのが好きです。週末はよくカメラを持って公園に行きます。
-A：いいですね。私は料理が好きです。最近、日本料理を作ることを練習しています。
-B：それはすごいですね。いつか作ってもらえますか？
-A：もちろん！今度一緒に食べましょう。',
+    transcript: 'A：田中さんは趣味は何ですか？\nB：私は写真を撮るのが好きです。週末はよくカメラを持って公園に行きます。\nA：いいですね。私は料理が好きです。最近、日本料理を作ることを練習しています。\nB：それはすごいですね。いつか作ってもらえますか？\nA：もちろん！今度一緒に食べましょう。',
     questions: [
-      { question: 'What is Tanaka's hobby?', options: ['Cooking', 'Photography', 'Reading', 'Sports'], answer: 1 },
+      { question: 'What is Tanaka\'s hobby?', options: ['Cooking', 'Photography', 'Reading', 'Sports'], answer: 1 },
       { question: 'Where does Tanaka often go on weekends?', options: ['The museum', 'The park', 'The library', 'The gym'], answer: 1 },
       { question: 'What is the other person recently practicing?', options: ['Taking photos', 'Making Italian food', 'Making Japanese food', 'Playing guitar'], answer: 2 },
     ],
@@ -142,14 +124,7 @@ A：もちろん！今度一緒に食べましょう。',
   {
     id: 'l05', title: 'Making Plans', level: 'N4', topic: 'Daily Life',
     audioSrc: '/audio/l05.mp3',
-    transcript: 'A：来週の土曜日、何か予定はありますか？
-B：特にないです。どうしましたか？
-A：映画を見に行きませんか？新しいアクション映画がやっているんですが。
-B：いいですね！何時ごろがいいですか？
-A：午後三時の回はどうですか？
-B：大丈夫です。どこの映画館ですか？
-A：渋谷の映画館です。駅から歩いて五分くらいです。
-B：わかりました。じゃあ、映画館の前で待ち合わせましょう。',
+    transcript: 'A：来週の土曜日、何か予定はありますか？\nB：特にないです。どうしましたか？\nA：映画を見に行きませんか？新しいアクション映画がやっているんですが。\nB：いいですね！何時ごろがいいですか？\nA：午後三時の回はどうですか？\nB：大丈夫です。どこの映画館ですか？\nA：渋谷の映画館です。駅から歩いて五分くらいです。\nB：わかりました。じゃあ、映画館の前で待ち合わせましょう。',
     questions: [
       { question: 'When are they planning to go out?', options: ['This weekend', 'Next Saturday', 'Next Sunday', 'Next Friday'], answer: 1 },
       { question: 'What type of movie will they watch?', options: ['Romance', 'Horror', 'Comedy', 'Action'], answer: 3 },
@@ -166,7 +141,7 @@ export const dailyPhrases: DailyPhrase[] = [
   { id:'dp04', japanese:'ごちそうさまでした', furigana:'ごちそうさまでした', romaji:'gochisou sama deshita', english:'Thank you for the meal (after eating)', context:'Said after finishing a meal to express thanks.' },
   { id:'dp05', japanese:'はじめまして', furigana:'はじめまして', romaji:'hajimemashite', english:'Nice to meet you (first meeting)', context:'Used only when meeting someone for the first time.' },
   { id:'dp06', japanese:'よろしくおねがいします', furigana:'よろしくおねがいします', romaji:'yoroshiku onegai shimasu', english:'Please treat me well / Nice to meet you', context:'Used after introducing yourself, or when asking someone for a favor.' },
-  { id:'dp07', japanese:'ただいま', furigana:'ただいま', romaji:'tadaima', english:'I'm home!', context:'Said when returning home. The expected response is おかえりなさい.' },
+  { id:'dp07', japanese:'ただいま', furigana:'ただいま', romaji:'tadaima', english:'I\'m home!', context:'Said when returning home. The expected response is おかえりなさい.' },
   { id:'dp08', japanese:'おかえりなさい', furigana:'おかえりなさい', romaji:'okaeri nasai', english:'Welcome back!', context:'Said in response to ただいま when someone returns home.' },
   { id:'dp09', japanese:'きをつけて', furigana:'きをつけて', romaji:'ki wo tsukete', english:'Take care / Be careful', context:'Said when someone is leaving or going somewhere, as a farewell.' },
   { id:'dp10', japanese:'どういたしまして', furigana:'どういたしまして', romaji:'dou itashimashite', english:'You\'re welcome', context:'The formal response to ありがとう (thank you).' },
@@ -183,6 +158,6 @@ export const pronunciationItems: PronunciationItem[] = [
   { id:'p07', title:'Voiced vs. Unvoiced Consonants', description:'Adding dakuten (″) to certain consonants voices them: k→g, s→z, t→d, h→b. Adding handakuten (°) to h makes p.', examples:[{jp:'か→が',romaji:'ka → ga',note:'k becomes g'},{jp:'さ→ざ',romaji:'sa → za',note:'s becomes z'},{jp:'は→ば→ぱ',romaji:'ha → ba → pa',note:'h becomes b or p'}]},
   { id:'p08', title:'Syllable Timing (Mora)', description:'Japanese is mora-timed — every mora (basic sound unit) takes roughly the same amount of time to say.', examples:[{jp:'にほんご',romaji:'ni-ho-n-go = 4 moras',note:'Each unit has equal time'},{jp:'とうきょう',romaji:'to-u-kyo-u = 4 moras',note:'Long vowels count double'},{jp:'きって',romaji:'ki-t-te = 3 moras',note:'っ counts as its own mora'}]},
   { id:'p09', title:'Silent Vowels (i and u)', description:'The vowels い and う are often devoiced (nearly silent) when they appear between or after voiceless consonants.', examples:[{jp:'です',romaji:'desu → "des" (u is silent)',note:'Very common in natural speech'},{jp:'します',romaji:'shimasu → "shimas"',note:'Final u often silent'},{jp:'すき',romaji:'suki → "ski"',note:'u is devoiced after s'}]},
-  { id:'p10', title:'Shadowing Practice Tips', description:'Shadowing means repeating what you hear immediately as you listen. It is one of the best ways to improve pronunciation and natural rhythm.', examples:[{jp:'ゆっくり → 普通',romaji:'Slow → Normal speed',note:'Start slow, then match natural pace'},{jp:'リピートする',romaji:'Repeat what you hear',note:'Don't translate — just shadow'},{jp:'録音して聞く',romaji:'Record and listen back',note:'Self-monitoring improves accuracy fast'}]},
+  { id:'p10', title:'Shadowing Practice Tips', description:'Shadowing means repeating what you hear immediately as you listen. It is one of the best ways to improve pronunciation and natural rhythm.', examples:[{jp:'ゆっくり → 普通',romaji:'Slow → Normal speed',note:'Start slow, then match natural pace'},{jp:'リピートする',romaji:'Repeat what you hear',note:'Don\'t translate — just shadow'},{jp:'録音して聞く',romaji:'Record and listen back',note:'Self-monitoring improves accuracy fast'}]},
 ]
 
