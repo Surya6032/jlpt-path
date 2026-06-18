@@ -32,10 +32,10 @@ jobs:
       - name: Build static export
         run: npm run build
 
-      - name: Add .nojekyll file
+      - name: Add .nojekyll
         run: touch ./out/.nojekyll
 
-      - name: Upload artifact
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./out
