@@ -20,7 +20,7 @@ function buildVocabQuestion(level: Level) {
   const word = pool[Math.floor(Math.random() * pool.length)]
   const others = pool.filter(v => v.id !== word.id && v.english !== word.english).sort(() => Math.random() - 0.5).slice(0, 3)
   const options = shuffle([...others.map(v => v.english), word.english])
-  return { prompt: word.japanese + ' (' + word.romaji + ')', options, answer: options.indexOf(word.english), explanation: word.exampleJp + ' -- ' + word.exampleEn }
+  return { prompt: word.japanese + ' (' + word.romaji + ')', options, answer: options.indexOf(word.english), explanation: word.exampleJp + ' — ' + word.exampleEn }
 }
 
 function buildKanjiQuestion(level: Level) {
@@ -28,7 +28,7 @@ function buildKanjiQuestion(level: Level) {
   const kanji = pool[Math.floor(Math.random() * pool.length)]
   const others = pool.filter(k => k.id !== kanji.id && k.meaning !== kanji.meaning).sort(() => Math.random() - 0.5).slice(0, 3)
   const options = shuffle([...others.map(k => k.meaning), kanji.meaning])
-  return { prompt: kanji.kanji, options, answer: options.indexOf(kanji.meaning), explanation: kanji.exampleWord + ' (' + kanji.exampleReading + ') -- ' + kanji.exampleSentenceEn }
+  return { prompt: kanji.kanji, options, answer: options.indexOf(kanji.meaning), explanation: kanji.exampleWord + ' (' + kanji.exampleReading + ') — ' + kanji.exampleSentenceEn }
 }
 
 function buildGrammarQuestion() {
@@ -108,7 +108,7 @@ export default function QuizPage() {
 
         <div className="grid sm:grid-cols-2 gap-4 mb-8">
           {([
-            { type: 'vocab-mc' as QuizType, title: 'Vocabulary Quiz', desc: 'Multiple choice -- Japanese → English', icon: '📚', color: 'indigo' },
+            { type: 'vocab-mc' as QuizType, title: 'Vocabulary Quiz', desc: 'Multiple choice — Japanese → English', icon: '📚', color: 'indigo' },
             { type: 'kanji-mc' as QuizType, title: 'Kanji Quiz', desc: 'Identify kanji meanings', icon: '漢', color: 'purple' },
             { type: 'grammar-mc' as QuizType, title: 'Grammar Quiz', desc: 'Test grammar knowledge', icon: '文', color: 'blue' },
             { type: 'mixed' as QuizType, title: 'Mixed Quiz', desc: 'Random vocab + kanji + grammar', icon: '🎲', color: 'pink' },

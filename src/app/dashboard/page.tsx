@@ -20,7 +20,7 @@ const learningAreas = [
 ]
 
 const nextLessons = [
-  { title: 'Hiragana -- か row', level: 'Beginner', time: 10, href: '/learn/hiragana' },
+  { title: 'Hiragana — か row', level: 'Beginner', time: 10, href: '/learn/hiragana' },
   { title: 'Vocabulary: Food & Drink', level: 'N5', time: 12, href: '/learn/vocabulary' },
   { title: 'Grammar: は topic marker', level: 'N5', time: 15, href: '/learn/grammar' },
   { title: 'N5 Reading: Daily Routine', level: 'N5', time: 8, href: '/learn/reading' },

@@ -36,11 +36,11 @@ const plans = {
 }
 
 const roadmap = [
-  { phase: 'Week 1-2', title: 'Foundations', items: ['Hiragana (all 46)', 'Katakana (all 46)', 'Basic pronunciation', 'Greetings & phrases', 'Numbers 1-100'], badge: 'Beginner' as const },
-  { phase: 'Week 3-6', title: 'N5 Core', items: ['N5 vocabulary (1-100)', 'N5 grammar points 1-5', 'N5 kanji batch 1', 'First N5 reading passage', 'N5 listening exercise'], badge: 'N5' as const },
-  { phase: 'Week 7-10', title: 'N5 Completion', items: ['N5 vocabulary complete', 'N5 grammar all points', 'All N5 kanji', 'All N5 reading passages', 'N5 mock test'], badge: 'N5' as const },
-  { phase: 'Week 11-16', title: 'N4 Introduction', items: ['N4 vocabulary (1-80)', 'N4 grammar points 1-5', 'N4 kanji batch 1', 'N4 reading passages', 'N4 listening'], badge: 'N4' as const },
-  { phase: 'Week 17-22', title: 'N4 Mastery', items: ['N4 vocabulary complete', 'All N4 grammar', 'All N4 kanji', 'N4 mock test pass 60%+', 'Full review'], badge: 'N4' as const },
+  { phase: 'Week 1–2', title: 'Foundations', items: ['Hiragana (all 46)', 'Katakana (all 46)', 'Basic pronunciation', 'Greetings & phrases', 'Numbers 1–100'], badge: 'Beginner' as const },
+  { phase: 'Week 3–6', title: 'N5 Core', items: ['N5 vocabulary (1–100)', 'N5 grammar points 1–5', 'N5 kanji batch 1', 'First N5 reading passage', 'N5 listening exercise'], badge: 'N5' as const },
+  { phase: 'Week 7–10', title: 'N5 Completion', items: ['N5 vocabulary complete', 'N5 grammar all points', 'All N5 kanji', 'All N5 reading passages', 'N5 mock test'], badge: 'N5' as const },
+  { phase: 'Week 11–16', title: 'N4 Introduction', items: ['N4 vocabulary (1–80)', 'N4 grammar points 1–5', 'N4 kanji batch 1', 'N4 reading passages', 'N4 listening'], badge: 'N4' as const },
+  { phase: 'Week 17–22', title: 'N4 Mastery', items: ['N4 vocabulary complete', 'All N4 grammar', 'All N4 kanji', 'N4 mock test pass 60%+', 'Full review'], badge: 'N4' as const },
 ]
 
 export default function PlannerPage() {
