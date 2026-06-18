@@ -10,6 +10,7 @@ import {
 
 const navLinks = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/learn/lessons', label: 'Lessons', icon: BookOpen },
   { href: '/learn/hiragana', label: 'Hiragana', icon: PenLine },
   { href: '/learn/vocabulary', label: 'Vocabulary', icon: BookOpen },
   { href: '/learn/kanji', label: 'Kanji', icon: PenLine },
