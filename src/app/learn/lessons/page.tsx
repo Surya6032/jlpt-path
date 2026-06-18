@@ -352,7 +352,8 @@ export default function LessonsPage() {
   const [screen, setScreen]           = useState<'map' | 'intro' | 'flashcard' | 'quiz' | 'result'>('map')
   const [activeUnit, setActiveUnit]   = useState<typeof UNITS[number] | null>(null)
   const [words, setWords]             = useState<VocabWord[]>([])
-  const wordsRef = useRef<VocabWord[]>([])
+  const wordsRef   = useRef<VocabWord[]>([])
+  const quizQsRef  = useRef<QuizQ[]>([])
   const [cardIdx, setCardIdx]         = useState(0)
   const [showBack, setShowBack]       = useState(false)
   const [showPronunciation, setShowPronunciation] = useState(false)
@@ -452,6 +453,7 @@ export default function LessonsPage() {
       }
     })
 
+    quizQsRef.current = qs   // sync ref — no batching delay
     setQuizQs(qs)
     setQIdx(0)
     setSelected(null)
@@ -466,7 +468,7 @@ export default function LessonsPage() {
   function handleAnswer(idx: number) {
     if (selected !== null) return   // already answered this question
     setSelected(idx)
-    const q = quizQs[qIdx]
+    const q = (quizQsRef.current.length > 0 ? quizQsRef.current : quizQs)[qIdx]
     const isCorrect = idx === q.correct
 
     if (isCorrect) {
@@ -495,7 +497,7 @@ export default function LessonsPage() {
         setScreen('result')
         return
       }
-      if (qIdx < quizQs.length - 1) {
+      if (qIdx < (quizQsRef.current.length > 0 ? quizQsRef.current : quizQs).length - 1) {
         setSelected(null)
         setCatMood('thinking')
         setQIdx(i => i + 1)
@@ -682,9 +684,10 @@ export default function LessonsPage() {
 
   // ── QUIZ ──────────────────────────────────────────────────────────────────────
   if (screen === 'quiz') {
-    if (quizQs.length === 0 || qIdx >= quizQs.length) return null
-    const q = quizQs[qIdx]
-    const progress_pct = Math.round(((qIdx + 1) / quizQs.length) * 100)
+    const _qs = quizQsRef.current.length > 0 ? quizQsRef.current : quizQs
+    if (_qs.length === 0 || qIdx >= _qs.length) return null
+    const q = _qs[qIdx]
+    const progress_pct = Math.round(((qIdx + 1) / _qs.length) * 100)
 
     const prompt =
       q.type === 'jp→en' ? `What does "${q.word.japanese}" mean?` :
