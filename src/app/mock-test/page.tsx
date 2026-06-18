@@ -36,11 +36,16 @@ const n5Test = {
     {
       name: 'Section 3: Reading',
       questions: [
-        { prompt: 'わたしは まいにち ろくじに おきます。\nWhat time does the person wake up?', options: ['5:00', '6:00', '7:00', '8:00'], answer: 1, explanation: 'ろくじ = 6 o\'clock.' },
-        { prompt: 'きょうは いい てんきです。\nWhat does this sentence say?', options: ['Today is rainy', 'Today is good weather', 'Yesterday was sunny', 'Tomorrow will be hot'], answer: 1, explanation: 'いいてんき = good weather.' },
-        { prompt: 'あのみせは やすくて おいしいです。\nWhat do we know about that shop?', options: ['Expensive and delicious', 'Cheap and delicious', 'Cheap and bad', 'Expensive and bad'], answer: 1, explanation: 'やすい = cheap, おいしい = delicious.' },
-        { prompt: 'わたしは コーヒーが すきです。\nWhat does the speaker like?', options: ['Tea', 'Juice', 'Coffee', 'Milk'], answer: 2, explanation: 'コーヒー = coffee; すき = to like.' },
-        { prompt: 'えきは ここから とおいですか？\nWhat is being asked?', options: ['Is the shop near here?', 'Is the station far from here?', 'Is the hospital close?', 'Where is the train?'], answer: 1, explanation: 'えき = station, とおい = far.' },
+        { prompt: 'わたしは まいにち ろくじに おきます。
+What time does the person wake up?', options: ['5:00', '6:00', '7:00', '8:00'], answer: 1, explanation: 'ろくじ = 6 o\'clock.' },
+        { prompt: 'きょうは いい てんきです。
+What does this sentence say?', options: ['Today is rainy', 'Today is good weather', 'Yesterday was sunny', 'Tomorrow will be hot'], answer: 1, explanation: 'いいてんき = good weather.' },
+        { prompt: 'あのみせは やすくて おいしいです。
+What do we know about that shop?', options: ['Expensive and delicious', 'Cheap and delicious', 'Cheap and bad', 'Expensive and bad'], answer: 1, explanation: 'やすい = cheap, おいしい = delicious.' },
+        { prompt: 'わたしは コーヒーが すきです。
+What does the speaker like?', options: ['Tea', 'Juice', 'Coffee', 'Milk'], answer: 2, explanation: 'コーヒー = coffee; すき = to like.' },
+        { prompt: 'えきは ここから とおいですか？
+What is being asked?', options: ['Is the shop near here?', 'Is the station far from here?', 'Is the hospital close?', 'Where is the train?'], answer: 1, explanation: 'えき = station, とおい = far.' },
       ]
     },
   ]
@@ -75,11 +80,16 @@ const n4Test = {
     {
       name: 'Section 3: Reading',
       questions: [
-        { prompt: '最近、テレワークを導入する会社が増えています。\nWhat is increasing recently?', options: ['Workers\' salaries', 'Companies introducing remote work', 'Overtime work', 'Long commutes'], answer: 1, explanation: 'テレワーク = remote work; 増えています = is increasing.' },
-        { prompt: '来週の土曜日に映画を見に行く予定です。\nWhen is the planned event?', options: ['This Saturday', 'Next Saturday', 'Last Saturday', 'Every Saturday'], answer: 1, explanation: '来週 = next week.' },
-        { prompt: 'ホテルはもう予約しました。\nWhat has already been done?', options: ['The ticket was bought', 'The suitcase was packed', 'The hotel was reserved', 'The restaurant was booked'], answer: 2, explanation: '予約しました = made a reservation.' },
-        { prompt: '仕事が終わっても上司が帰るまで待つ人もいます。\nWhy do some people wait?', options: ['They have more work to do', 'They missed the last train', 'They wait until their boss leaves', 'They enjoy the office'], answer: 2, explanation: '上司が帰るまで待つ = wait until the boss leaves.' },
-        { prompt: '理由を教えてください。\nWhat is being requested?', options: ['Please tell me the way', 'Please tell me the reason', 'Please tell me the price', 'Please tell me the time'], answer: 1, explanation: '理由 (riyuu) = reason.' },
+        { prompt: '最近、テレワークを導入する会社が増えています。
+What is increasing recently?', options: ['Workers' salaries', 'Companies introducing remote work', 'Overtime work', 'Long commutes'], answer: 1, explanation: 'テレワーク = remote work; 増えています = is increasing.' },
+        { prompt: '来週の土曜日に映画を見に行く予定です。
+When is the planned event?', options: ['This Saturday', 'Next Saturday', 'Last Saturday', 'Every Saturday'], answer: 1, explanation: '来週 = next week.' },
+        { prompt: 'ホテルはもう予約しました。
+What has already been done?', options: ['The ticket was bought', 'The suitcase was packed', 'The hotel was reserved', 'The restaurant was booked'], answer: 2, explanation: '予約しました = made a reservation.' },
+        { prompt: '仕事が終わっても上司が帰るまで待つ人もいます。
+Why do some people wait?', options: ['They have more work to do', 'They missed the last train', 'They wait until their boss leaves', 'They enjoy the office'], answer: 2, explanation: '上司が帰るまで待つ = wait until the boss leaves.' },
+        { prompt: '理由を教えてください。
+What is being requested?', options: ['Please tell me the way', 'Please tell me the reason', 'Please tell me the price', 'Please tell me the time'], answer: 1, explanation: '理由 (riyuu) = reason.' },
       ]
     },
   ]
