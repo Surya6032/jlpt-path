@@ -323,14 +323,18 @@ const UNITS = [
   { id: 'u05', level: 'N5', title: 'Time & Dates',     emoji: '🕐', category: 'Time' },
   { id: 'u06', level: 'N5', title: 'Locations',        emoji: '📍', category: 'Locations' },
   { id: 'u07', level: 'N5', title: 'Weather',          emoji: '🌤', category: 'Weather' },
-  { id: 'u08', level: 'N5', title: 'Adjectives',       emoji: '✨', category: 'Adjectives' },
-  { id: 'u09', level: 'N5', title: 'Verbs',            emoji: '🏃', category: 'Verbs' },
-  { id: 'u10', level: 'N5', title: 'Common Words',     emoji: '💬', category: 'Common' },
-  { id: 'u11', level: 'N4', title: 'Daily Life',       emoji: '🏠', category: 'Daily Life' },
-  { id: 'u12', level: 'N4', title: 'School & Work',    emoji: '📚', category: 'School' },
-  { id: 'u13', level: 'N4', title: 'N4 Verbs',         emoji: '⚡', category: 'Verbs' },
-  { id: 'u14', level: 'N4', title: 'N4 Adjectives',    emoji: '🎨', category: 'Adjectives' },
-  { id: 'u15', level: 'N4', title: 'Society & Travel', emoji: '🌏', category: 'Travel' },
+  { id: 'u08', level: 'N5', title: 'Animals',          emoji: '🐾', category: 'Animals' },
+  { id: 'u09', level: 'N5', title: 'Adjectives',       emoji: '✨', category: 'Adjectives' },
+  { id: 'u10', level: 'N5', title: 'Verbs',            emoji: '🏃', category: 'Verbs' },
+  { id: 'u11', level: 'N5', title: 'Common Words',     emoji: '💬', category: 'Common' },
+  { id: 'u12', level: 'N4', title: 'Daily Life',       emoji: '🏠', category: 'Daily Life' },
+  { id: 'u13', level: 'N4', title: 'School & Work',    emoji: '📚', category: 'School' },
+  { id: 'u14', level: 'N4', title: 'Health',           emoji: '🏥', category: 'Health' },
+  { id: 'u15', level: 'N4', title: 'Nature & Seasons', emoji: '🌸', category: 'Nature' },
+  { id: 'u16', level: 'N4', title: 'Society',          emoji: '🌏', category: 'Society' },
+  { id: 'u17', level: 'N4', title: 'Travel',           emoji: '✈️', category: 'Travel' },
+  { id: 'u18', level: 'N4', title: 'Work & Business',  emoji: '💼', category: 'Work' },
+  { id: 'u19', level: 'N4', title: 'Adverbs',          emoji: '⚡', category: 'Adverbs' },
 ] as const
 
 type UnitId = typeof UNITS[number]['id']
@@ -375,7 +379,15 @@ export default function LessonsPage() {
   }
 
   function startUnit(unit: typeof UNITS[number]) {
-    const w = vocabData.filter(v => v.category === unit.category).slice(0, 12)
+    // Get words for this category, fallback to all vocab if fewer than 8 found
+    let w = vocabData.filter(v => v.category === unit.category)
+    // If fewer than 8 words in this category, pad with words from other categories
+    if (w.length < 8) {
+      const extra = shuffle(vocabData.filter(v => v.category !== unit.category))
+      w = [...w, ...extra].slice(0, 12)
+    } else {
+      w = shuffle(w).slice(0, 12)
+    }
     setWords(w)
     setActiveUnit(unit)
     setCardIdx(0)
@@ -408,26 +420,30 @@ export default function LessonsPage() {
   }
 
   function buildQuiz() {
-    const allEnglish = vocabData.map(v => v.english)
+    const allEnglish  = vocabData.map(v => v.english)
     const allJapanese = vocabData.map(v => v.japanese)
-    const allRomaji = vocabData.map(v => v.romaji)
+    const allRomaji   = vocabData.map(v => v.romaji)
 
     const qs: QuizQ[] = words.slice(0, 8).map((w, i) => {
       const type: QuizQ['type'] = i % 3 === 0 ? 'romaji' : i % 2 === 0 ? 'en→jp' : 'jp→en'
 
       if (type === 'jp→en') {
-        // show English options, ask what does Japanese mean
+        // Show English options — ask what does the Japanese mean
         const wrongPool = shuffle(allEnglish.filter(e => e !== w.english)).slice(0, 3)
+        // Guarantee 3 distractors even if pool is small
+        while (wrongPool.length < 3) wrongPool.push(wrongPool[0] ?? 'other')
         const options = shuffle([w.english, ...wrongPool])
         return { word: w, options, correct: options.indexOf(w.english), type }
       } else if (type === 'en→jp') {
-        // show Japanese options, ask which is the Japanese for English word
+        // Show Japanese options — ask which is the Japanese for the English word
         const wrongPool = shuffle(allJapanese.filter(j => j !== w.japanese)).slice(0, 3)
+        while (wrongPool.length < 3) wrongPool.push(wrongPool[0] ?? 'その他')
         const options = shuffle([w.japanese, ...wrongPool])
         return { word: w, options, correct: options.indexOf(w.japanese), type }
       } else {
-        // romaji — show romaji options, ask what is the romaji for Japanese word
+        // Show romaji options — ask what is the romaji for the Japanese word
         const wrongPool = shuffle(allRomaji.filter(r => r !== w.romaji)).slice(0, 3)
+        while (wrongPool.length < 3) wrongPool.push(wrongPool[0] ?? 'other')
         const options = shuffle([w.romaji, ...wrongPool])
         return { word: w, options, correct: options.indexOf(w.romaji), type }
       }
