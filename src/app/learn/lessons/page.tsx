@@ -200,7 +200,7 @@ interface QuizQ {
 
 // ── Main component ────────────────────────────────────────────────────────────
 export default function LessonsPage() {
-  const { progress, addXP, completeLesson } = useProgress()
+  const { progress, markLessonComplete, addStudyMinutes, addQuizScore } = useProgress()
   const [screen, setScreen]           = useState<'map' | 'intro' | 'flashcard' | 'quiz' | 'result'>('map')
   const [activeUnit, setActiveUnit]   = useState<typeof UNITS[number] | null>(null)
   const [words, setWords]             = useState<VocabWord[]>([])
@@ -319,7 +319,7 @@ export default function LessonsPage() {
         triggerCatMood('happy', 1500)
       }
       setXpEarned(x => x + xp)
-      addXP(xp)
+      addStudyMinutes(1)
     } else {
       setStreak(0)
       setHearts(h => h - 1)
@@ -337,7 +337,7 @@ export default function LessonsPage() {
         setSelected(null)
         setCatMood('thinking')
       } else {
-        if (activeUnit) completeLesson(activeUnit.id)
+        if (activeUnit) markLessonComplete(activeUnit.id)
         setScreen('result')
       }
     }, 1400)
