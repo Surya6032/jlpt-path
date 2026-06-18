@@ -1,4 +1,4 @@
-use client
+'use client'
 import { useState } from 'react'
 import { vocabData } from '@/data/vocab'
 import { kanjiData } from '@/data/kanji'
