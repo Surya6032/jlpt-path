@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import AppLayout from '@/components/layout/AppLayout'
+import { AppLayout } from '@/components/layout/AppLayout'
 import { Card, Button, Badge } from '@/components/ui'
 import { vocabData } from '@/data/vocab'
 import { useProgress } from '@/store/progress'
