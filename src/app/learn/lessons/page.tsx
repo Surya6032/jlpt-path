@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { AppLayout } from '@/components/layout/AppLayout'
 import { Card, Button, Badge } from '@/components/ui'
 import { vocabData } from '@/data/vocab'
 import { useProgress } from '@/store/progress'
@@ -333,9 +332,9 @@ export default function LessonsPage() {
         return
       }
       if (qIdx < quizQs.length - 1) {
-        setQIdx(i => i + 1)
         setSelected(null)
         setCatMood('thinking')
+        setQIdx(i => i + 1)
       } else {
         if (activeUnit) markLessonComplete(activeUnit.id)
         setScreen('result')
@@ -346,7 +345,7 @@ export default function LessonsPage() {
   // ── MAP ──────────────────────────────────────────────────────────────────────
   if (screen === 'map') {
     return (
-      <AppLayout>
+      <div className="min-h-screen bg-white dark:bg-gray-900">
         <div className="max-w-2xl mx-auto px-4 py-8">
           {toast && (
             <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-900 font-bold px-6 py-2 rounded-full shadow-lg z-50 animate-bounce">
@@ -397,14 +396,14 @@ export default function LessonsPage() {
             })}
           </div>
         </div>
-      </AppLayout>
+      </div>
     )
   }
 
   // ── INTRO ────────────────────────────────────────────────────────────────────
   if (screen === 'intro' && activeUnit) {
     return (
-      <AppLayout>
+      <div className="min-h-screen bg-white dark:bg-gray-900">
         <div className="max-w-lg mx-auto px-4 py-12 flex flex-col items-center text-center gap-6">
           <CatMascot mood="excited" />
           <span className="text-6xl">{activeUnit.emoji}</span>
@@ -417,7 +416,7 @@ export default function LessonsPage() {
             <Button className="flex-1" onClick={startFlashcards}>Start Lesson →</Button>
           </div>
         </div>
-      </AppLayout>
+      </div>
     )
   }
 
@@ -425,7 +424,7 @@ export default function LessonsPage() {
   if (screen === 'flashcard' && words.length > 0) {
     const word = words[cardIdx]
     return (
-      <AppLayout>
+      <div className="min-h-screen bg-white dark:bg-gray-900">
         <div className="max-w-lg mx-auto px-4 py-6">
           {/* Progress */}
           <div className="flex items-center gap-3 mb-4">
@@ -513,7 +512,7 @@ export default function LessonsPage() {
             </Button>
           )}
         </div>
-      </AppLayout>
+      </div>
     )
   }
 
@@ -528,7 +527,7 @@ export default function LessonsPage() {
                             `What is the romaji for "${q.word.japanese}"?`
 
     return (
-      <AppLayout>
+      <div className="min-h-screen bg-white dark:bg-gray-900">
         <div className="max-w-lg mx-auto px-4 py-6">
           {toast && (
             <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-900 font-bold px-6 py-2 rounded-full shadow-lg z-50">
@@ -610,7 +609,7 @@ export default function LessonsPage() {
             )}
           </Card>
         </div>
-      </AppLayout>
+      </div>
     )
   }
 
@@ -619,7 +618,7 @@ export default function LessonsPage() {
     const accuracy = Math.round((correct / quizQs.length) * 100)
     const resultMood: CatMood = accuracy >= 80 ? 'excited' : accuracy >= 50 ? 'happy' : 'sad'
     return (
-      <AppLayout>
+      <div className="min-h-screen bg-white dark:bg-gray-900">
         <div className="max-w-lg mx-auto px-4 py-12 flex flex-col items-center text-center gap-4">
           <CatMascot mood={resultMood} />
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
@@ -646,7 +645,7 @@ export default function LessonsPage() {
             <Button className="flex-1" onClick={() => startUnit(activeUnit)}>Try Again</Button>
           </div>
         </div>
-      </AppLayout>
+      </div>
     )
   }
 
