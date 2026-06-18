@@ -615,14 +615,14 @@ export default function LessonsPage() {
             {/* Japanese word — always visible */}
             <div
               className="text-5xl font-bold text-gray-900 dark:text-white mb-2 cursor-pointer"
-              onClick={() => speakJapanese(word.japanese)}
+              onClick={() => speakJapanese(word.furigana)}
               title="Click to hear"
             >
               {word.japanese}
             </div>
             <p className="text-gray-400 text-sm mb-1">{word.furigana}</p>
             <button
-              onClick={() => speakJapanese(word.japanese)}
+              onClick={() => speakJapanese(word.furigana)}
               className="text-purple-500 hover:text-purple-700 text-sm mb-4"
             >
               🔊 Hear it
@@ -681,7 +681,8 @@ export default function LessonsPage() {
   }
 
   // ── QUIZ ──────────────────────────────────────────────────────────────────────
-  if (screen === 'quiz' && quizQs.length > 0) {
+  if (screen === 'quiz') {
+    if (quizQs.length === 0 || qIdx >= quizQs.length) return null
     const q = quizQs[qIdx]
     const progress_pct = Math.round(((qIdx + 1) / quizQs.length) * 100)
 
@@ -728,7 +729,7 @@ export default function LessonsPage() {
             {/* Audio button for jp→en and romaji */}
             {(q.type === 'jp→en' || q.type === 'romaji') && (
               <button
-                onClick={() => speakJapanese(q.word.japanese)}
+                onClick={() => speakJapanese(q.word.furigana)}
                 className="text-sm text-purple-500 hover:text-purple-700 mb-4 block"
               >
                 🔊 Hear word
