@@ -3,13 +3,16 @@ export type JLPTLevel = 'N5' | 'N4' | 'N3' | 'N2' | 'N1'
 export interface HiraganaItem {
   id: string; character: string; romaji: string; example: string; exampleMeaning: string
 }
+
 export interface KatakanaItem {
   id: string; character: string; romaji: string; example: string; exampleMeaning: string
 }
+
 export interface VocabWord {
   id: string; japanese: string; furigana: string; romaji: string; english: string
   level: 'N5' | 'N4'; category: string; example?: string; exampleEn?: string; mnemonic?: string
 }
+
 export interface KanjiItem {
   id: string
   kanji: string
@@ -25,6 +28,7 @@ export interface KanjiItem {
   strokeCount?: number
   mnemonic?: string
 }
+
 export interface GrammarPoint {
   id: string
   title: string
@@ -39,6 +43,7 @@ export interface GrammarPoint {
   pattern?: string
   explanation?: string
 }
+
 export interface ReadingPassage {
   id: string
   title: string
@@ -51,6 +56,7 @@ export interface ReadingPassage {
   vocabulary?: string[]
   questions: { question: string; options: string[]; answer: number }[]
 }
+
 export interface ListeningExercise {
   id: string
   title: string
@@ -58,26 +64,37 @@ export interface ListeningExercise {
   topic: string
   audioSrc?: string
   transcript: string
-  translation?: string
+  transcriptFurigana?: string
+  translation: string
   questions: { question: string; options: string[]; answer: number }[]
 }
+
+// PronunciationItem matches the actual pronunciationItems data in misc.ts
+export interface PronunciationItem {
+  id: string
+  title: string
+  description: string
+  examples: { jp: string; romaji: string; note: string }[]
+}
+
+export interface DailyPhrase {
+  id: string; japanese: string; furigana: string; english: string; category: string
+}
+
 export interface QuizQuestion {
   id: string; type: 'vocab' | 'kanji' | 'grammar' | 'listening'
   question: string; options: string[]; answer: number; explanation?: string
 }
+
 export interface MockTest {
   id: string; title: string; level: 'N5' | 'N4'
   sections: { name: string; questions: QuizQuestion[] }[]
 }
-export interface DailyPhrase {
-  id: string; japanese: string; furigana: string; english: string; category: string
-}
-export interface PronunciationItem {
-  id: string; character: string; romaji: string; type: 'hiragana' | 'katakana'
-}
+
 export interface SRSEntry {
   interval: number; easeFactor: number; nextReview: string; reps: number
 }
+
 export interface UserProgress {
   streak: number
   totalStudyMinutes: number
