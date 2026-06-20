@@ -70,7 +70,13 @@ export interface MockTest {
   sections: { name: string; questions: QuizQuestion[] }[]
 }
 export interface DailyPhrase {
-  id: string; japanese: string; furigana: string; english: string; category: string
+  id: string
+  japanese: string
+  furigana: string
+  romaji: string
+  english: string
+  context: string
+  category?: string
 }
 export interface PronunciationItem {
   id: string
