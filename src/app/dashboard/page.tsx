@@ -15,7 +15,7 @@ import {
   CalendarDays, Trophy, ChevronLeft, X
 } from 'lucide-react'
 
-const learningAreas = [
+const learningAreas: { label: string; key: 'hiraganaProgress' | 'katakanaProgress' | 'n5Progress' | 'n4Progress'; icon: React.ElementType; href: string; color: string; bg: string }[] = [
   { label:'Hiragana',   key:'hiraganaProgress', icon:PenLine,    href:'/learn/hiragana',    color:'text-pink-500',   bg:'bg-pink-50 dark:bg-pink-900/20' },
   { label:'Katakana',   key:'katakanaProgress', icon:PenLine,    href:'/learn/katakana',    color:'text-purple-500', bg:'bg-purple-50 dark:bg-purple-900/20' },
   { label:'Vocabulary', key:'n5Progress',       icon:BookOpen,   href:'/learn/vocabulary',  color:'text-blue-500',   bg:'bg-blue-50 dark:bg-blue-900/20' },
@@ -305,7 +305,7 @@ export default function DashboardPage() {
         <h2 className="text-xl font-extrabold text-gray-900 dark:text-white mb-4">Learning Areas</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {learningAreas.map(area => {
-            const val = (progress as Record<string,number>)[area.key] || 0
+            const val = (progress[area.key] as number) || 0
             return (
               <Link key={area.label} href={area.href}>
                 <Card className="hover:shadow-md transition-all cursor-pointer group">
