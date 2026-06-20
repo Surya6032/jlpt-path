@@ -1,50 +1,47 @@
 'use client'
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useProgress } from '@/store/progress'
 import { vocabData } from '@/data/vocab'
 import type { VocabWord } from '@/types'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-type Screen = 'map' | 'intro' | 'flashcard' | 'quiz' | 'result'
+type Screen = 'map' | 'calendar' | 'flashcard' | 'quiz' | 'result'
 type Mood   = 'idle' | 'happy' | 'sad' | 'excited' | 'thinking'
+type QType  = 'jp2en' | 'en2jp' | 'audio'
 
-interface QuizQ {
-  word: VocabWord
-  options: string[]   // 4 english strings
-  correct: string     // the correct english
-}
+interface QuizQ { word: VocabWord; options: string[]; correct: string; type: QType }
+interface Unit  { id: string; title: string; emoji: string; level: 'N5'|'N4'; category: string; color: string }
 
-interface Unit {
-  id: string
-  title: string
-  emoji: string
-  level: 'N5' | 'N4'
-  category: string
-  color: string
-}
-
-// ─── Units ────────────────────────────────────────────────────────────────────
+// ─── All 25 Units mapped to every category in vocab ──────────────────────────
 const UNITS: Unit[] = [
-  { id:'u1',  title:'Greetings',       emoji:'👋', level:'N5', category:'Greetings',  color:'#461E96' },
-  { id:'u2',  title:'Family',          emoji:'👨‍👩‍👧', level:'N5', category:'Family',     color:'#00B4E6' },
-  { id:'u3',  title:'Numbers',         emoji:'🔢', level:'N5', category:'Numbers',    color:'#E6008C' },
-  { id:'u4',  title:'Time',            emoji:'⏰', level:'N5', category:'Time',       color:'#00DC8C' },
-  { id:'u5',  title:'Food & Drink',    emoji:'🍜', level:'N5', category:'Food',       color:'#735CCC' },
-  { id:'u6',  title:'Daily Life',      emoji:'🏠', level:'N5', category:'Daily Life', color:'#461E96' },
-  { id:'u7',  title:'School',          emoji:'📚', level:'N5', category:'School',     color:'#00B4E6' },
-  { id:'u8',  title:'Locations',       emoji:'📍', level:'N5', category:'Locations',  color:'#E6008C' },
-  { id:'u9',  title:'Weather',         emoji:'🌤',  level:'N5', category:'Weather',    color:'#00DC8C' },
-  { id:'u10', title:'Adjectives',      emoji:'✨', level:'N5', category:'Adjectives', color:'#735CCC' },
-  { id:'u11', title:'Verbs',           emoji:'⚡', level:'N5', category:'Verbs',      color:'#461E96' },
-  { id:'u12', title:'Common Words',    emoji:'💬', level:'N5', category:'Common',     color:'#00B4E6' },
-  { id:'u13', title:'Animals',         emoji:'🐾', level:'N4', category:'Animals',    color:'#E6008C' },
-  { id:'u14', title:'Health',          emoji:'🏥', level:'N4', category:'Health',     color:'#00DC8C' },
-  { id:'u15', title:'Nature',          emoji:'🌸', level:'N4', category:'Nature',     color:'#735CCC' },
-  { id:'u16', title:'Seasons',         emoji:'🍂', level:'N4', category:'Seasons',    color:'#461E96' },
-  { id:'u17', title:'Society',         emoji:'🌏', level:'N4', category:'Society',    color:'#00B4E6' },
-  { id:'u18', title:'Travel',          emoji:'✈️', level:'N4', category:'Travel',     color:'#E6008C' },
-  { id:'u19', title:'Work',            emoji:'💼', level:'N4', category:'Work',       color:'#00DC8C' },
-  { id:'u20', title:'Adverbs',         emoji:'🔤', level:'N4', category:'Adverbs',    color:'#735CCC' },
+  // N5
+  { id:'u01', title:'Greetings',     emoji:'👋', level:'N5', category:'Greetings',  color:'#461E96' },
+  { id:'u02', title:'Family',        emoji:'👨‍👩‍👧', level:'N5', category:'Family',     color:'#00B4E6' },
+  { id:'u03', title:'Numbers',       emoji:'🔢', level:'N5', category:'Numbers',    color:'#E6008C' },
+  { id:'u04', title:'Time',          emoji:'⏰', level:'N5', category:'Time',       color:'#00DC8C' },
+  { id:'u05', title:'Food & Drink',  emoji:'🍜', level:'N5', category:'Food',       color:'#735CCC' },
+  { id:'u06', title:'Daily Life',    emoji:'🏠', level:'N5', category:'Daily Life', color:'#461E96' },
+  { id:'u07', title:'School',        emoji:'📚', level:'N5', category:'School',     color:'#00B4E6' },
+  { id:'u08', title:'Locations',     emoji:'📍', level:'N5', category:'Locations',  color:'#E6008C' },
+  { id:'u09', title:'Weather',       emoji:'🌤',  level:'N5', category:'Weather',    color:'#00DC8C' },
+  { id:'u10', title:'Adjectives',    emoji:'✨', level:'N5', category:'Adjectives', color:'#735CCC' },
+  { id:'u11', title:'Verbs N5',      emoji:'⚡', level:'N5', category:'Verbs',      color:'#461E96' },
+  { id:'u12', title:'Common Words',  emoji:'💬', level:'N5', category:'Common',     color:'#00B4E6' },
+  { id:'u13', title:'Animals',       emoji:'🐾', level:'N5', category:'Animals',    color:'#E6008C' },
+  { id:'u14', title:'Health N5',     emoji:'🏥', level:'N5', category:'Health',     color:'#00DC8C' },
+  { id:'u15', title:'Nature',        emoji:'🌸', level:'N5', category:'Nature',     color:'#735CCC' },
+  { id:'u16', title:'Seasons',       emoji:'🍂', level:'N5', category:'Seasons',    color:'#461E96' },
+  { id:'u17', title:'Work N5',       emoji:'💼', level:'N5', category:'Work',       color:'#00B4E6' },
+  // N4
+  { id:'u18', title:'Adjectives N4', emoji:'🎨', level:'N4', category:'Adjectives', color:'#E6008C' },
+  { id:'u19', title:'Adverbs',       emoji:'🔤', level:'N4', category:'Adverbs',    color:'#00DC8C' },
+  { id:'u20', title:'Daily Life N4', emoji:'🏡', level:'N4', category:'Daily Life', color:'#735CCC' },
+  { id:'u21', title:'Health N4',     emoji:'💊', level:'N4', category:'Health',     color:'#461E96' },
+  { id:'u22', title:'School N4',     emoji:'🏫', level:'N4', category:'School',     color:'#00B4E6' },
+  { id:'u23', title:'Society',       emoji:'🌏', level:'N4', category:'Society',    color:'#E6008C' },
+  { id:'u24', title:'Travel',        emoji:'✈️', level:'N4', category:'Travel',     color:'#00DC8C' },
+  { id:'u25', title:'Verbs N4',      emoji:'🏃', level:'N4', category:'Verbs',      color:'#735CCC' },
+  { id:'u26', title:'Work N4',       emoji:'🏢', level:'N4', category:'Work',       color:'#461E96' },
 ]
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -61,599 +58,861 @@ function speak(text: string) {
   if (typeof window === 'undefined') return
   window.speechSynthesis.cancel()
   const u = new SpeechSynthesisUtterance(text)
-  u.lang = 'ja-JP'
-  u.rate = 0.8
+  u.lang = 'ja-JP'; u.rate = 0.8
   window.speechSynthesis.speak(u)
 }
 
-// Build quiz questions — completely self-contained, no external state
 function buildQuestions(words: VocabWord[]): QuizQ[] {
   const allEnglish = vocabData.map(v => v.english)
-  return shuffle(words).slice(0, 8).map(word => {
-    const distractors = shuffle(
-      allEnglish.filter(e => e !== word.english)
-    ).slice(0, 3)
+  const types: QType[] = ['jp2en', 'en2jp', 'audio']
+  return shuffle(words).slice(0, Math.min(10, words.length)).map(word => {
+    const type = types[Math.floor(Math.random() * types.length)]
+    const distractors = shuffle(allEnglish.filter(e => e !== word.english)).slice(0, 3)
     const options = shuffle([word.english, ...distractors])
-    return { word, options, correct: word.english }
+    return { word, options, correct: word.english, type }
   })
 }
 
-// ─── 3D SVG Cat Mascot ────────────────────────────────────────────────────────
-function NekoCat({ mood }: { mood: Mood }) {
-  const animations = `
-    @keyframes bob      { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
-    @keyframes jump     { 0%,100%{transform:translateY(0) scaleY(1)} 40%{transform:translateY(-20px) scaleY(1.1)} 80%{transform:translateY(0) scaleY(0.9)} }
-    @keyframes shake    { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
-    @keyframes blink    { 0%,90%,100%{transform:scaleY(1)} 95%{transform:scaleY(0.05)} }
-    @keyframes tailWag  { 0%,100%{transform:rotate(-20deg)} 50%{transform:rotate(20deg)} }
-    @keyframes tailDrop { 0%,100%{transform:rotate(10deg)} 50%{transform:rotate(-10deg)} }
-    @keyframes tearDrop { 0%{transform:translateY(0);opacity:1} 100%{transform:translateY(14px);opacity:0} }
-    @keyframes starSpin { 0%{transform:rotate(0deg) scale(0)} 50%{transform:rotate(180deg) scale(1)} 100%{transform:rotate(360deg) scale(0)} }
-    @keyframes blush    { 0%,100%{opacity:0.5} 50%{opacity:0.9} }
-    @keyframes breathe  { 0%,100%{transform:scaleY(1)} 50%{transform:scaleY(1.04)} }
-  `
-  const anim =
-    mood === 'happy'   ? 'jump 0.6s ease' :
-    mood === 'excited' ? 'jump 0.5s ease infinite' :
-    mood === 'sad'     ? 'shake 0.5s ease' :
-    mood === 'thinking'? 'bob 1.2s ease infinite' :
-    'bob 2s ease infinite'
+// ─── Mnemonics ────────────────────────────────────────────────────────────────
+const MNEMONICS: Record<string, string> = {
+  'こんにちは': 'Ko-ni-chi-WA sounds like "Come, knee, chee-WA!" — bow at the knee!',
+  'ありがとう': 'ARI-GA-TOU — "A really gato (cat) too!" — a grateful cat.',
+  'すみません': 'SUMI-MASEN — "Sue me, masen" — apologizing to Sue.',
+  'おはようございます': 'O-HA-YO — "Oh! Hi, yo!" in the morning.',
+  'さようなら': 'SA-YO-NA-RA — "Say-yo, nah, rah!" — wave goodbye.',
+  'ありがとうございます': 'Picture a gator (ありがとう) bowing very formally.',
+}
 
-  const eyeLeft  = mood === 'happy' || mood === 'excited'
-    ? <path d="M62 88 Q69 82 76 88" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round"/>
+function getMnemonic(word: VocabWord): string {
+  return MNEMONICS[word.japanese] || `"${word.romaji}" — imagine ${word.english.toLowerCase()} written in Japanese dust.`
+}
+
+// ─── Stroke SVG stub (visual pattern, not a full stroke-order library) ────────
+function StrokeDisplay({ kanji }: { kanji: string }) {
+  const isKanji = /[\u4E00-\u9FFF]/.test(kanji)
+  if (!isKanji) return null
+  return (
+    <div className="flex items-center justify-center mt-2">
+      <div className="relative w-16 h-16 border-2 border-dashed border-purple-200 rounded-lg flex items-center justify-center bg-purple-50">
+        <span className="text-3xl">{kanji}</span>
+        <div className="absolute -bottom-5 text-xs text-gray-400">kanji</div>
+      </div>
+    </div>
+  )
+}
+
+// ─── 3D SVG Cat ───────────────────────────────────────────────────────────────
+function NekoSan({ mood }: { mood: Mood }) {
+  const [blink, setBlink] = useState(false)
+  const [pupilX, setPupilX] = useState(0)
+
+  useEffect(() => {
+    const blinkInterval = setInterval(() => {
+      setBlink(true)
+      setTimeout(() => setBlink(false), 150)
+    }, 3500)
+    const pupilInterval = setInterval(() => {
+      setPupilX(Math.random() > 0.5 ? 1.5 : -1.5)
+    }, 2000)
+    return () => { clearInterval(blinkInterval); clearInterval(pupilInterval) }
+  }, [])
+
+  const bodyAnim = mood === 'happy' || mood === 'excited'
+    ? 'animate-bounce'
     : mood === 'sad'
-    ? <path d="M62 92 Q69 98 76 92" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round"/>
-    : <><ellipse cx="69" cy="89" rx="7" ry="7" fill="white"/><ellipse cx="70" cy="89" rx="3.5" ry="4" fill="#1a1a2e" style={{animation:'blink 3.5s ease infinite'}}/><ellipse cx="71" cy="87" rx="1.2" ry="1.2" fill="white"/></>
-
-  const eyeRight = mood === 'happy' || mood === 'excited'
-    ? <path d="M94 88 Q101 82 108 88" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round"/>
-    : mood === 'sad'
-    ? <path d="M94 92 Q101 98 108 92" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round"/>
-    : <><ellipse cx="101" cy="89" rx="7" ry="7" fill="white"/><ellipse cx="102" cy="89" rx="3.5" ry="4" fill="#1a1a2e" style={{animation:'blink 3.5s ease infinite 0.3s'}}/><ellipse cx="103" cy="87" rx="1.2" ry="1.2" fill="white"/></>
-
-  const tailAnim = mood === 'happy' || mood === 'excited' ? 'tailWag 0.4s ease infinite' :
-                   mood === 'sad' ? 'tailDrop 2s ease infinite' : 'tailWag 2s ease infinite'
-
-  const showBlush  = mood === 'happy' || mood === 'excited'
-  const showTears  = mood === 'sad'
-  const showStars  = mood === 'happy' || mood === 'excited'
+    ? 'animate-pulse'
+    : 'animate-[bob_3s_ease-in-out_infinite]'
 
   return (
-    <div style={{ width:170, height:220, position:'relative', filter:'drop-shadow(0 8px 16px rgba(70,30,150,0.35))' }}>
-      <style>{animations}</style>
-      <svg viewBox="0 0 170 220" width="170" height="220" style={{ animation: anim, transformOrigin:'bottom center' }}>
-        <defs>
-          <radialGradient id="bodyGrad" cx="38%" cy="30%" r="65%">
-            <stop offset="0%" stopColor="#7B52D4"/>
-            <stop offset="60%" stopColor="#461E96"/>
-            <stop offset="100%" stopColor="#2B1060"/>
-          </radialGradient>
-          <radialGradient id="headGrad" cx="35%" cy="28%" r="62%">
-            <stop offset="0%" stopColor="#8A64DC"/>
-            <stop offset="55%" stopColor="#5B2DB8"/>
-            <stop offset="100%" stopColor="#2B1060"/>
-          </radialGradient>
-          <radialGradient id="bellyGrad" cx="50%" cy="40%" r="55%">
-            <stop offset="0%" stopColor="#E8E0FF"/>
-            <stop offset="100%" stopColor="#C5B8F0"/>
-          </radialGradient>
-          <radialGradient id="earGrad" cx="30%" cy="20%" r="70%">
-            <stop offset="0%" stopColor="#9B7AE0"/>
-            <stop offset="100%" stopColor="#3A1880"/>
-          </radialGradient>
-        </defs>
+    <div className="flex flex-col items-center select-none">
+      <style>{`
+        @keyframes bob       { 0%,100%{transform:translateY(0)}   50%{transform:translateY(-8px)} }
+        @keyframes tailWag   { 0%,100%{transform:rotate(-20deg)} 50%{transform:rotate(20deg)}  }
+        @keyframes tailDroop { 0%,100%{transform:rotate(10deg)}  50%{transform:rotate(20deg)}  }
+        @keyframes tearDrop  { 0%{opacity:0;transform:translateY(0)} 100%{opacity:1;transform:translateY(12px)} }
+        @keyframes starSpin  { from{transform:rotate(0deg) scale(1)} to{transform:rotate(360deg) scale(1.2)} }
+        @keyframes blush     { 0%,100%{opacity:.5} 50%{opacity:.9} }
+        @keyframes shake     { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+      `}</style>
+      <svg width="140" height="160" viewBox="0 0 140 160" className={bodyAnim} style={mood==='sad'?{animation:'shake 0.5s ease-in-out 3'}:{}}>
+        {/* Drop shadow */}
+        <ellipse cx="70" cy="155" rx="35" ry="6" fill="rgba(0,0,0,0.12)" />
 
         {/* Tail */}
-        <path d="M115 175 Q150 160 148 140 Q146 120 132 118"
-          fill="none" stroke="url(#bodyGrad)" strokeWidth="14" strokeLinecap="round"
-          style={{ transformOrigin:'115px 175px', animation: tailAnim }}/>
-        <path d="M115 175 Q150 160 148 140 Q146 120 132 118"
-          fill="none" stroke="#7B52D4" strokeWidth="8" strokeLinecap="round"
-          style={{ transformOrigin:'115px 175px', animation: tailAnim, opacity:0.6 }}/>
+        <path
+          d="M 95 120 Q 130 110 125 85 Q 120 65 108 75"
+          fill="none" stroke="#5B2FBE" strokeWidth="8" strokeLinecap="round"
+          style={{ transformOrigin:'95px 120px', animation: mood==='happy'||mood==='excited' ? 'tailWag 0.4s ease-in-out infinite' : 'tailDroop 2s ease-in-out infinite' }}
+        />
 
         {/* Body */}
-        <ellipse cx="85" cy="165" rx="42" ry="48" fill="url(#bodyGrad)"/>
-        <ellipse cx="85" cy="185" rx="28" ry="16" fill="rgba(0,0,0,0.15)"/>
-
+        <ellipse cx="70" cy="118" rx="38" ry="35" fill="url(#bodyGrad)" />
         {/* Belly */}
-        <ellipse cx="85" cy="165" rx="22" ry="28" fill="url(#bellyGrad)"
-          style={{ animation:'breathe 3s ease infinite' }}/>
-
-        {/* Left ear */}
-        <polygon points="52,68 42,38 68,55" fill="url(#earGrad)"/>
-        <polygon points="55,66 47,44 66,57" fill="#FF8FAB" opacity="0.8"/>
-
-        {/* Right ear */}
-        <polygon points="118,68 128,38 102,55" fill="url(#earGrad)"/>
-        <polygon points="115,66 123,44 104,57" fill="#FF8FAB" opacity="0.8"/>
-
-        {/* Head */}
-        <ellipse cx="85" cy="84" rx="38" ry="36" fill="url(#headGrad)"/>
-        {/* Head highlight */}
-        <ellipse cx="74" cy="72" rx="18" ry="13" fill="white" opacity="0.12" transform="rotate(-20,74,72)"/>
-
-        {/* Whiskers left */}
-        <line x1="30" y1="96" x2="62" y2="98" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5"/>
-        <line x1="28" y1="102" x2="62" y2="101" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5"/>
-        <line x1="32" y1="108" x2="62" y2="105" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5"/>
-        {/* Whiskers right */}
-        <line x1="108" y1="98" x2="140" y2="96" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5"/>
-        <line x1="108" y1="101" x2="142" y2="102" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5"/>
-        <line x1="108" y1="105" x2="138" y2="108" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5"/>
-
-        {/* Eyes */}
-        {eyeLeft}
-        {eyeRight}
-
-        {/* Nose */}
-        <polygon points="85,100 82,105 88,105" fill="#FF8FAB"/>
-        {/* Mouth */}
-        <path d="M82 106 Q85 110 88 106" stroke="#FF6B8A" strokeWidth="1.5" fill="none"/>
-
-        {/* Blush */}
-        {showBlush && <>
-          <ellipse cx="60" cy="100" rx="10" ry="6" fill="#FF8FAB"
-            style={{ animation:'blush 1s ease infinite', opacity:0.7 }}/>
-          <ellipse cx="110" cy="100" rx="10" ry="6" fill="#FF8FAB"
-            style={{ animation:'blush 1s ease infinite 0.5s', opacity:0.7 }}/>
-        </>}
-
-        {/* Tears */}
-        {showTears && <>
-          <ellipse cx="65" cy="98" rx="3" ry="3" fill="#80DEFF" opacity="0.9"
-            style={{ animation:'tearDrop 1.2s ease infinite' }}/>
-          <ellipse cx="105" cy="98" rx="3" ry="3" fill="#80DEFF" opacity="0.9"
-            style={{ animation:'tearDrop 1.2s ease infinite 0.4s' }}/>
-        </>}
-
-        {/* Stars */}
-        {showStars && <>
-          <text x="25" y="55" fontSize="16" style={{ animation:'starSpin 1s ease infinite' }}>✨</text>
-          <text x="128" y="50" fontSize="14" style={{ animation:'starSpin 1s ease infinite 0.3s' }}>⭐</text>
-        </>}
+        <ellipse cx="70" cy="122" rx="22" ry="20" fill="url(#bellyGrad)" opacity="0.9" />
 
         {/* Paws */}
-        <ellipse cx="62" cy="210" rx="16" ry="10" fill="url(#bodyGrad)"/>
-        <ellipse cx="108" cy="210" rx="16" ry="10" fill="url(#bodyGrad)"/>
+        <ellipse cx="48" cy="148" rx="13" ry="9" fill="url(#pawGrad)" />
+        <ellipse cx="92" cy="148" rx="13" ry="9" fill="url(#pawGrad)" />
         {/* Toe beans */}
-        <ellipse cx="58" cy="213" rx="3" ry="2" fill="rgba(255,143,171,0.6)"/>
-        <ellipse cx="65" cy="214" rx="3" ry="2" fill="rgba(255,143,171,0.6)"/>
-        <ellipse cx="104" cy="213" rx="3" ry="2" fill="rgba(255,143,171,0.6)"/>
-        <ellipse cx="111" cy="214" rx="3" ry="2" fill="rgba(255,143,171,0.6)"/>
+        <ellipse cx="44" cy="150" rx="3" ry="2" fill="rgba(180,100,200,0.4)" />
+        <ellipse cx="50" cy="152" rx="3" ry="2" fill="rgba(180,100,200,0.4)" />
+        <ellipse cx="56" cy="150" rx="3" ry="2" fill="rgba(180,100,200,0.4)" />
+        <ellipse cx="88" cy="150" rx="3" ry="2" fill="rgba(180,100,200,0.4)" />
+        <ellipse cx="94" cy="152" rx="3" ry="2" fill="rgba(180,100,200,0.4)" />
+        <ellipse cx="100" cy="150" rx="3" ry="2" fill="rgba(180,100,200,0.4)" />
+
+        {/* Head */}
+        <circle cx="70" cy="72" r="36" fill="url(#headGrad)" />
+        {/* Head highlight */}
+        <ellipse cx="58" cy="58" rx="14" ry="10" fill="rgba(255,255,255,0.18)" transform="rotate(-20,58,58)" />
+
+        {/* Ears */}
+        <polygon points="38,50 28,22 52,42" fill="url(#earGrad)" />
+        <polygon points="32,48 30,26 46,42" fill="#FF9CC2" />
+        <polygon points="102,50 112,22 88,42" fill="url(#earGrad)" />
+        <polygon points="108,48 110,26 94,42" fill="#FF9CC2" />
+
+        {/* Eyes */}
+        {mood === 'happy' || mood === 'excited' ? (
+          <>
+            <path d="M 53 70 Q 60 62 67 70" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" />
+            <path d="M 73 70 Q 80 62 87 70" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" />
+          </>
+        ) : mood === 'sad' ? (
+          <>
+            <path d="M 53 74 Q 60 68 67 74" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" />
+            <path d="M 73 74 Q 80 68 87 74" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" />
+          </>
+        ) : (
+          <>
+            {/* Left eye */}
+            <circle cx="60" cy="70" r="9" fill="white" />
+            <circle cx="60" cy="70" r={blink ? 1 : 6} fill="#1a0040" style={{ transition: 'r 0.05s' }}>
+              <animateTransform attributeName="transform" type="translate" values={`${pupilX},0;${pupilX},0`} dur="0.1s" />
+            </circle>
+            <circle cx={60 + pupilX - 2} cy="68" r="2" fill="white" opacity="0.8" />
+            {/* Right eye */}
+            <circle cx="80" cy="70" r="9" fill="white" />
+            <circle cx="80" cy="70" r={blink ? 1 : 6} fill="#1a0040" style={{ transition: 'r 0.05s' }}>
+              <animateTransform attributeName="transform" type="translate" values={`${pupilX},0;${pupilX},0`} dur="0.1s" />
+            </circle>
+            <circle cx={80 + pupilX - 2} cy="68" r="2" fill="white" opacity="0.8" />
+          </>
+        )}
+
+        {/* Nose */}
+        <polygon points="70,79 67,83 73,83" fill="#FF6BAE" />
+        {/* Mouth */}
+        <path d="M 67 83 Q 70 87 73 83" fill="none" stroke="#FF6BAE" strokeWidth="1.5" strokeLinecap="round" />
+
+        {/* Whiskers */}
+        <line x1="30" y1="76" x2="58" y2="79" stroke="white" strokeWidth="1.2" opacity="0.8" />
+        <line x1="28" y1="81" x2="58" y2="82" stroke="white" strokeWidth="1.2" opacity="0.8" />
+        <line x1="30" y1="86" x2="58" y2="84" stroke="white" strokeWidth="1.2" opacity="0.8" />
+        <line x1="82" y1="79" x2="110" y2="76" stroke="white" strokeWidth="1.2" opacity="0.8" />
+        <line x1="82" y1="82" x2="112" y2="81" stroke="white" strokeWidth="1.2" opacity="0.8" />
+        <line x1="82" y1="84" x2="110" y2="86" stroke="white" strokeWidth="1.2" opacity="0.8" />
+
+        {/* Blush — happy/excited */}
+        {(mood === 'happy' || mood === 'excited') && (
+          <>
+            <ellipse cx="50" cy="78" rx="9" ry="5" fill="#FF9CC2" style={{ animation: 'blush 1s ease-in-out infinite' }} />
+            <ellipse cx="90" cy="78" rx="9" ry="5" fill="#FF9CC2" style={{ animation: 'blush 1s ease-in-out infinite' }} />
+          </>
+        )}
+
+        {/* Tears — sad */}
+        {mood === 'sad' && (
+          <>
+            <ellipse cx="57" cy="84" rx="2.5" ry="4" fill="#00B4E6" style={{ animation: 'tearDrop 1s ease-in infinite' }} />
+            <ellipse cx="83" cy="84" rx="2.5" ry="4" fill="#00B4E6" style={{ animation: 'tearDrop 1s ease-in infinite 0.3s' }} />
+          </>
+        )}
+
+        {/* Stars — excited */}
+        {mood === 'excited' && (
+          <>
+            <text x="18" y="45" fontSize="14" style={{ animation: 'starSpin 1s linear infinite', transformOrigin: '25px 40px' }}>⭐</text>
+            <text x="108" y="45" fontSize="14" style={{ animation: 'starSpin 1s linear infinite 0.5s', transformOrigin: '115px 40px' }}>⭐</text>
+          </>
+        )}
+        {mood === 'happy' && (
+          <>
+            <text x="20" y="42" fontSize="12">✨</text>
+            <text x="108" y="42" fontSize="12">✨</text>
+          </>
+        )}
+
+        {/* Gradients */}
+        <defs>
+          <radialGradient id="headGrad" cx="40%" cy="35%" r="60%">
+            <stop offset="0%"   stopColor="#7B52D3" />
+            <stop offset="100%" stopColor="#3A1580" />
+          </radialGradient>
+          <radialGradient id="bodyGrad" cx="40%" cy="30%" r="65%">
+            <stop offset="0%"   stopColor="#6B42C3" />
+            <stop offset="100%" stopColor="#2E1070" />
+          </radialGradient>
+          <radialGradient id="bellyGrad" cx="50%" cy="40%" r="60%">
+            <stop offset="0%"   stopColor="#EDE0FF" />
+            <stop offset="100%" stopColor="#C8A8F0" />
+          </radialGradient>
+          <radialGradient id="pawGrad" cx="40%" cy="30%" r="70%">
+            <stop offset="0%"   stopColor="#7B52D3" />
+            <stop offset="100%" stopColor="#3A1580" />
+          </radialGradient>
+          <radialGradient id="earGrad" cx="50%" cy="50%" r="70%">
+            <stop offset="0%"   stopColor="#7B52D3" />
+            <stop offset="100%" stopColor="#3A1580" />
+          </radialGradient>
+        </defs>
       </svg>
     </div>
   )
 }
 
 // ─── Speech Bubble ─────────────────────────────────────────────────────────────
-function Bubble({ text }: { text: string }) {
+const BUBBLE_LINES: Record<Mood, string[]> = {
+  idle:     ['にゃ～ 🐾', 'Let\'s study! にゃ！', 'がんばって！✨', 'You can do it! にゃ'],
+  thinking: ['Think carefully... にゃ？', 'Hmm... にゃ🤔', 'Take your time! にゃ', 'You\'ve got this! にゃ'],
+  happy:    ['すごい！ Great job! 🎉', '正解！ Correct! にゃ！', 'Amazing! ✨にゃ！', 'You\'re on fire! 🔥にゃ'],
+  excited:  ['PERFECT! 🌟にゃ！！', 'STREAK BONUS! ⭐にゃ！', '100%! Incredible! にゃ！', 'SUPERCAT APPROVES! 🐾'],
+  sad:      ['Don\'t give up! にゃ💪', 'Almost! Try again にゃ', 'Practice makes perfect にゃ', 'Next one! にゃ🌸'],
+}
+
+function SpeechBubble({ mood }: { mood: Mood }) {
+  const lines = BUBBLE_LINES[mood]
+  const [line, setLine] = useState(lines[0])
+  useEffect(() => {
+    setLine(lines[Math.floor(Math.random() * lines.length)])
+  }, [mood])
   return (
-    <div style={{
-      position:'relative', background:'white',
-      border:'2px solid #461E96', borderRadius:16,
-      padding:'10px 18px', fontSize:14, fontWeight:600,
-      color:'#461E96', maxWidth:220, textAlign:'center',
-      boxShadow:'0 4px 12px rgba(70,30,150,0.15)',
-      marginBottom:8
-    }}>
-      {text}
-      <div style={{
-        position:'absolute', bottom:-12, left:'50%',
-        transform:'translateX(-50%)',
-        width:0, height:0,
-        borderLeft:'8px solid transparent',
-        borderRight:'8px solid transparent',
-        borderTop:'12px solid #461E96'
-      }}/>
-      <div style={{
-        position:'absolute', bottom:-9, left:'50%',
-        transform:'translateX(-50%)',
-        width:0, height:0,
-        borderLeft:'7px solid transparent',
-        borderRight:'7px solid transparent',
-        borderTop:'11px solid white'
-      }}/>
+    <div className="relative bg-white border-2 border-purple-200 rounded-2xl px-4 py-2 text-sm font-medium text-purple-800 shadow-md mb-2 max-w-[220px] text-center">
+      {line}
+      <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-r-2 border-b-2 border-purple-200 rotate-45" />
     </div>
   )
 }
 
-// ─── Main Page ─────────────────────────────────────────────────────────────────
+// ─── Confetti ─────────────────────────────────────────────────────────────────
+function Confetti() {
+  const pieces = Array.from({ length: 30 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    color: ['#461E96','#00B4E6','#E6008C','#00DC8C','#735CCC'][i % 5],
+    delay: Math.random() * 1,
+    duration: 1.5 + Math.random(),
+  }))
+  return (
+    <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+      {pieces.map(p => (
+        <div key={p.id} className="absolute top-0 w-2 h-3 rounded-sm"
+          style={{
+            left: `${p.x}%`,
+            backgroundColor: p.color,
+            animation: `fall ${p.duration}s ease-in ${p.delay}s forwards`,
+          }} />
+      ))}
+      <style>{`@keyframes fall { from{transform:translateY(-20px) rotate(0)} to{transform:translateY(100vh) rotate(720deg)} }`}</style>
+    </div>
+  )
+}
+
+// ─── Calendar Screen ──────────────────────────────────────────────────────────
+function CalendarScreen({ onBack, studyDates }: { onBack: () => void; studyDates: string[] }) {
+  const today = new Date()
+  const [viewYear, setViewYear]   = useState(today.getFullYear())
+  const [viewMonth, setViewMonth] = useState(today.getMonth())
+
+  const daysInMonth  = new Date(viewYear, viewMonth + 1, 0).getDate()
+  const firstWeekday = new Date(viewYear, viewMonth, 1).getDay()
+  const monthName    = new Date(viewYear, viewMonth).toLocaleString('default', { month: 'long', year: 'numeric' })
+
+  const prevMonth = () => { if (viewMonth === 0) { setViewMonth(11); setViewYear(y => y-1) } else setViewMonth(m => m-1) }
+  const nextMonth = () => { if (viewMonth === 11) { setViewMonth(0); setViewYear(y => y+1) } else setViewMonth(m => m+1) }
+
+  // Calculate current streak
+  const sortedDates = [...new Set(studyDates)].sort().reverse()
+  let streak = 0
+  const now = new Date(); now.setHours(0,0,0,0)
+  for (let i = 0; i < 365; i++) {
+    const d = new Date(now); d.setDate(d.getDate() - i)
+    const ds = d.toISOString().split('T')[0]
+    if (sortedDates.includes(ds)) { streak++ } else break
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="max-w-md mx-auto">
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-6">
+          <button onClick={onBack} className="text-purple-600 hover:text-purple-800 font-medium">← Back</button>
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Study Streak 🔥</h1>
+        </div>
+
+        {/* Streak Card */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 mb-4 shadow-lg border border-purple-100 text-center">
+          <div className="text-6xl font-black text-purple-700 dark:text-purple-300">{streak}</div>
+          <div className="text-gray-500 dark:text-gray-400 mt-1 font-medium">Day Streak 🔥</div>
+          <div className="mt-3 text-sm text-gray-400">{studyDates.length} total study days</div>
+          {streak >= 7  && <div className="mt-2 text-xs bg-yellow-50 text-yellow-700 rounded-full px-3 py-1 inline-block">🏅 Week Warrior</div>}
+          {streak >= 30 && <div className="mt-2 text-xs bg-orange-50 text-orange-700 rounded-full px-3 py-1 inline-block ml-1">🔥 Monthly Master</div>}
+        </div>
+
+        {/* Month Nav */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-lg border border-purple-100">
+          <div className="flex items-center justify-between mb-4">
+            <button onClick={prevMonth} className="w-8 h-8 rounded-full bg-purple-100 text-purple-700 hover:bg-purple-200 flex items-center justify-center font-bold">‹</button>
+            <span className="font-bold text-gray-800 dark:text-white">{monthName}</span>
+            <button onClick={nextMonth} className="w-8 h-8 rounded-full bg-purple-100 text-purple-700 hover:bg-purple-200 flex items-center justify-center font-bold">›</button>
+          </div>
+
+          {/* Day labels */}
+          <div className="grid grid-cols-7 mb-2">
+            {['Su','Mo','Tu','We','Th','Fr','Sa'].map(d => (
+              <div key={d} className="text-center text-xs font-bold text-gray-400 py-1">{d}</div>
+            ))}
+          </div>
+
+          {/* Calendar grid */}
+          <div className="grid grid-cols-7 gap-1">
+            {Array.from({ length: firstWeekday }).map((_,i) => <div key={`e${i}`} />)}
+            {Array.from({ length: daysInMonth }, (_,i) => i+1).map(day => {
+              const dateStr = `${viewYear}-${String(viewMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`
+              const isStudy   = studyDates.includes(dateStr)
+              const isToday   = dateStr === today.toISOString().split('T')[0]
+              return (
+                <div key={day} className={`
+                  aspect-square flex items-center justify-center rounded-full text-sm font-medium transition-all
+                  ${isStudy ? 'bg-purple-600 text-white shadow-md' : 'text-gray-600 dark:text-gray-300'}
+                  ${isToday ? 'ring-2 ring-purple-400 ring-offset-1' : ''}
+                  ${!isStudy && !isToday ? 'hover:bg-purple-50' : ''}
+                `}>
+                  {isStudy ? '🔥' : day}
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Legend */}
+          <div className="flex gap-4 mt-4 justify-center text-xs text-gray-500">
+            <div className="flex items-center gap-1"><span className="w-4 h-4 bg-purple-600 rounded-full inline-block" /> Studied</div>
+            <div className="flex items-center gap-1"><span className="w-4 h-4 border-2 border-purple-400 rounded-full inline-block" /> Today</div>
+          </div>
+        </div>
+
+        {/* Weekly heatmap */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 mt-4 shadow-lg border border-purple-100">
+          <h3 className="font-bold text-gray-700 dark:text-white mb-3 text-sm">Last 12 Weeks</h3>
+          <div className="flex gap-1 flex-wrap">
+            {Array.from({ length: 84 }, (_, i) => {
+              const d = new Date(); d.setDate(d.getDate() - (83 - i)); d.setHours(0,0,0,0)
+              const ds = d.toISOString().split('T')[0]
+              const studied = studyDates.includes(ds)
+              return (
+                <div key={i} title={ds}
+                  className={`w-4 h-4 rounded-sm transition-all ${studied ? 'bg-purple-600' : 'bg-gray-100 dark:bg-gray-700'}`}
+                />
+              )
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Main Component ────────────────────────────────────────────────────────────
 export default function LessonsPage() {
-  const { progress, markLessonComplete, markVocabLearned, addQuizScore, addStudyMinutes } = useProgress()
+  const { progress, markLessonComplete, markVocabLearned, addQuizScore, addStudyMinutes, unlockAchievement } = useProgress()
 
-  // ── state ──
-  const [screen,     setScreen]     = useState<Screen>('map')
-  const [unit,       setUnit]       = useState<Unit | null>(null)
-  const [mood,       setMood]       = useState<Mood>('idle')
-  const [bubble,     setBubble]     = useState('にゃ！')
+  const [screen,      setScreen]      = useState<Screen>('map')
+  const [mood,        setMood]        = useState<Mood>('idle')
+  const [unit,        setUnit]        = useState<Unit | null>(null)
+  const [flashWords,  setFlashWords]  = useState<VocabWord[]>([])
+  const [flashIdx,    setFlashIdx]    = useState(0)
+  const [showMeaning, setShowMeaning] = useState(false)
+  const [showMnemonic,setShowMnemonic]= useState(false)
+  const [showRomaji,  setShowRomaji]  = useState(false)
+  const [questions,   setQuestions]   = useState<QuizQ[]>([])
+  const [qIdx,        setQIdx]        = useState(0)
+  const [selected,    setSelected]    = useState<string | null>(null)
+  const [score,       setScore]       = useState(0)
+  const [wrongWords,  setWrongWords]  = useState<VocabWord[]>([])
+  const [streak,      setStreak]      = useState(0)
+  const [showConfetti,setShowConfetti]= useState(false)
+  const [stars,       setStars]       = useState(0)
+  const [hint,        setHint]        = useState<string | null>(null)
+  const [studyDates,  setStudyDates]  = useState<string[]>(() => {
+    if (typeof window === 'undefined') return []
+    const saved = localStorage.getItem('jlpt-study-dates')
+    return saved ? JSON.parse(saved) : []
+  })
 
-  // Flashcard state
-  const [flashWords, setFlashWords] = useState<VocabWord[]>([])
-  const [flashIdx,   setFlashIdx]   = useState(0)
-  const [showMeaning,setShowMeaning]= useState(false)
-
-  // Quiz state — stored as plain local variables passed down, no async state
-  const [questions,  setQuestions]  = useState<QuizQ[]>([])
-  const [qIdx,       setQIdx]       = useState(0)
-  const [selected,   setSelected]   = useState<string | null>(null)
-  const [score,      setScore]      = useState(0)
-  const [streak,     setStreak]     = useState(0)
-
-  // ── cat bubble helper ──
-  const say = useCallback((text: string, m: Mood) => {
-    setBubble(text)
-    setMood(m)
+  // Record today as a study day
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0]
+    setStudyDates(prev => {
+      const updated = prev.includes(today) ? prev : [...prev, today]
+      localStorage.setItem('jlpt-study-dates', JSON.stringify(updated))
+      return updated
+    })
   }, [])
 
-  // idle loop
-  useEffect(() => {
-    if (screen !== 'map') return
-    const phrases = ['にゃ！', 'がんばって！', '練習しよう！', 'ฅ^•ω•^ฅ', 'Let\'s study!']
-    let i = 0
-    const t = setInterval(() => { i = (i+1)%phrases.length; setBubble(phrases[i]) }, 3000)
-    return () => clearInterval(t)
-  }, [screen])
+  // ── Start a unit ──────────────────────────────────────────────────────────
+  const startUnit = useCallback((u: Unit) => {
+    const words = vocabData.filter(v => v.category === u.category && v.level === u.level)
+    const padded = words.length < 4
+      ? [...words, ...shuffle(vocabData.filter(v => v.id !== words[0]?.id)).slice(0, 4 - words.length)]
+      : words
+    const selected = shuffle(padded).slice(0, Math.min(12, padded.length))
+    setUnit(u); setFlashWords(selected); setFlashIdx(0)
+    setShowMeaning(false); setShowMnemonic(false); setShowRomaji(false)
+    setMood('thinking'); setScreen('flashcard')
+  }, [])
 
-  // ── start unit ──
-  function startUnit(u: Unit) {
-    const pool = vocabData.filter(v => v.category === u.category)
-    const words = shuffle(pool.length >= 5 ? pool : [...pool, ...shuffle(vocabData).slice(0, 12 - pool.length)]).slice(0, 12)
-    setUnit(u)
-    setFlashWords(words)
-    setFlashIdx(0)
-    setShowMeaning(false)
-    setScreen('intro')
-    say(`Let\'s learn ${u.title}! にゃ`, 'excited')
-  }
-
-  // ── flashcard controls ──
-  function handleShowMeaning() {
-    setShowMeaning(true)
-    say('Remember this! にゃ', 'thinking')
-    speak(flashWords[flashIdx].furigana)
-  }
-
-  function handleNextFlash() {
-    const next = flashIdx + 1
-    if (next >= flashWords.length) {
-      // Build quiz immediately with the words we have right here
-      const qs = buildQuestions(flashWords)
-      setQuestions(qs)
-      setQIdx(0)
-      setScore(0)
-      setStreak(0)
-      setSelected(null)
-      setScreen('quiz')
-      say('Quiz time! にゃ？', 'thinking')
+  // ── Flashcard nav ─────────────────────────────────────────────────────────
+  const nextFlash = useCallback(() => {
+    if (flashIdx < flashWords.length - 1) {
+      setFlashIdx(i => i + 1); setShowMeaning(false); setShowMnemonic(false); setShowRomaji(false)
+      setMood('thinking')
     } else {
-      setFlashIdx(next)
-      setShowMeaning(false)
-      say('Next word! にゃ', 'idle')
+      // Build quiz synchronously from stable flashWords
+      const qs = buildQuestions(flashWords)
+      setQuestions(qs); setQIdx(0); setSelected(null)
+      setScore(0); setWrongWords([]); setStreak(0); setHint(null)
+      setMood('thinking'); setScreen('quiz')
     }
-  }
+  }, [flashIdx, flashWords])
 
-  // ── quiz answer ──
-  function handleAnswer(choice: string) {
-    if (selected !== null) return   // already answered
+  const prevFlash = useCallback(() => {
+    if (flashIdx > 0) {
+      setFlashIdx(i => i - 1); setShowMeaning(false); setShowMnemonic(false)
+    }
+  }, [flashIdx])
+
+  // ── Handle quiz answer ────────────────────────────────────────────────────
+  const handleAnswer = useCallback((ans: string) => {
+    if (selected !== null) return
     const q = questions[qIdx]
-    const correct = choice === q.correct
-
-    setSelected(choice)
-
+    const correct = ans === q.correct
+    setSelected(ans)
+    speak(q.word.furigana)
     if (correct) {
       const newStreak = streak + 1
       setStreak(newStreak)
       setScore(s => s + 1)
+      setMood(newStreak >= 3 ? 'excited' : 'happy')
       markVocabLearned(q.word.id)
-      speak(q.word.furigana)
-      if (newStreak >= 3) say('Amazing streak! にゃ！！', 'excited')
-      else say('Correct! にゃ！', 'happy')
     } else {
       setStreak(0)
-      speak(q.word.furigana)
-      say('Not quite... にゃ', 'sad')
+      setMood('sad')
+      setWrongWords(prev => prev.find(w => w.id === q.word.id) ? prev : [...prev, q.word])
     }
-
-    // Advance after 1.4s — we capture qIdx + questions locally to avoid stale refs
-    const nextQIdx = qIdx + 1
-    const totalQs  = questions.length
     setTimeout(() => {
-      if (nextQIdx >= totalQs) {
-        // Done
-        const finalScore = correct ? score + 1 : score
-        const pct = Math.round((finalScore / totalQs) * 100)
-        addQuizScore(unit?.title ?? 'Lessons', pct)
-        addStudyMinutes(5)
-        if (unit) markLessonComplete(unit.id)
-        setScreen('result')
-        if (pct >= 80) say('Excellent! にゃ！', 'excited')
-        else if (pct >= 50) say('Good job! にゃ！', 'happy')
-        else say('Keep practicing! にゃ', 'sad')
+      setSelected(null); setHint(null)
+      if (qIdx < questions.length - 1) {
+        setQIdx(i => i + 1); setMood('thinking')
       } else {
-        setQIdx(nextQIdx)
-        setSelected(null)
-        say('Think carefully... にゃ？', 'thinking')
+        // Show results
+        const finalScore = correct ? score + 1 : score
+        const pct = Math.round((finalScore / questions.length) * 100)
+        const s = pct === 100 ? 3 : pct >= 70 ? 2 : 1
+        setStars(s); setShowConfetti(pct === 100)
+        addQuizScore(unit?.title || 'Lesson', pct)
+        markLessonComplete(unit?.id || '')
+        addStudyMinutes(Math.round(questions.length * 0.5))
+        if (pct === 100) unlockAchievement('perfect_lesson')
+        if (s === 3) unlockAchievement('three_star')
+        setMood(pct >= 70 ? 'excited' : 'sad')
+        setScreen('result')
       }
     }, 1400)
+  }, [selected, questions, qIdx, score, streak, unit, markVocabLearned, addQuizScore, markLessonComplete, addStudyMinutes, unlockAchievement])
+
+  // ── Use hint (eliminate one wrong option) ─────────────────────────────────
+  const useHint = useCallback(() => {
+    if (!questions[qIdx] || hint) return
+    const q = questions[qIdx]
+    const wrong = q.options.find(o => o !== q.correct)
+    setHint(wrong || null)
+  }, [questions, qIdx, hint])
+
+  // ── Retry wrong words ──────────────────────────────────────────────────────
+  const retryWrong = useCallback(() => {
+    if (wrongWords.length === 0) return
+    const qs = buildQuestions(wrongWords)
+    setQuestions(qs); setQIdx(0); setSelected(null)
+    setScore(0); setWrongWords([]); setStreak(0); setHint(null)
+    setMood('thinking'); setScreen('quiz')
+  }, [wrongWords])
+
+  // ─── Map Screen ─────────────────────────────────────────────────────────────
+  if (screen === 'map') {
+    const n5Units = UNITS.filter(u => u.level === 'N5')
+    const n4Units = UNITS.filter(u => u.level === 'N4')
+    const completedIds = new Set(progress.lessonsCompleted)
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 pb-20">
+        {/* Top bar */}
+        <div className="sticky top-0 z-10 bg-white/90 dark:bg-gray-900/90 backdrop-blur border-b border-purple-100 dark:border-gray-700 px-4 py-3 flex items-center justify-between">
+          <h1 className="text-xl font-black text-purple-700 dark:text-purple-300">📖 Lessons</h1>
+          <button onClick={() => setScreen('calendar')}
+            className="flex items-center gap-2 bg-purple-100 hover:bg-purple-200 text-purple-700 font-semibold px-4 py-2 rounded-full text-sm transition-all">
+            🔥 {progress.streak} day streak · 📅 Calendar
+          </button>
+        </div>
+
+        <div className="max-w-lg mx-auto px-4 pt-6 space-y-8">
+          {/* N5 Section */}
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full">N5</span>
+              <span className="text-gray-500 text-sm font-medium">{n5Units.filter(u => completedIds.has(u.id)).length}/{n5Units.length} complete</span>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {n5Units.map((u, idx) => {
+                const done = completedIds.has(u.id)
+                const locked = idx > 0 && !completedIds.has(n5Units[idx - 1]?.id)
+                const wordCount = vocabData.filter(v => v.category === u.category && v.level === u.level).length
+                return (
+                  <button key={u.id} onClick={() => !locked && startUnit(u)}
+                    disabled={locked}
+                    className={`relative rounded-2xl p-4 text-left transition-all shadow-md active:scale-95
+                      ${locked ? 'bg-gray-100 dark:bg-gray-800 opacity-60 cursor-not-allowed' : 'hover:scale-102 cursor-pointer bg-white dark:bg-gray-800'}
+                      ${done ? 'ring-2 ring-green-400' : ''}
+                    `}
+                    style={{ borderTop: `4px solid ${locked ? '#ccc' : u.color}` }}>
+                    <div className="text-3xl mb-1">{locked ? '🔒' : u.emoji}</div>
+                    <div className="font-bold text-gray-800 dark:text-white text-sm">{u.title}</div>
+                    <div className="text-xs text-gray-400 mt-0.5">{wordCount} words · ~{Math.ceil(wordCount * 0.5)} min</div>
+                    {done && <div className="absolute top-2 right-2 text-yellow-400 text-lg">⭐</div>}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* N4 Section */}
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded-full">N4</span>
+              <span className="text-gray-500 text-sm font-medium">{n4Units.filter(u => completedIds.has(u.id)).length}/{n4Units.length} complete</span>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {n4Units.map((u, idx) => {
+                const done = completedIds.has(u.id)
+                const allN5Done = n5Units.every(n => completedIds.has(n.id))
+                const locked = !allN5Done || (idx > 0 && !completedIds.has(n4Units[idx - 1]?.id))
+                const wordCount = vocabData.filter(v => v.category === u.category && v.level === u.level).length
+                return (
+                  <button key={u.id} onClick={() => !locked && startUnit(u)}
+                    disabled={locked}
+                    className={`relative rounded-2xl p-4 text-left transition-all shadow-md active:scale-95
+                      ${locked ? 'bg-gray-100 dark:bg-gray-800 opacity-60 cursor-not-allowed' : 'hover:scale-102 cursor-pointer bg-white dark:bg-gray-800'}
+                      ${done ? 'ring-2 ring-green-400' : ''}
+                    `}
+                    style={{ borderTop: `4px solid ${locked ? '#ccc' : u.color}` }}>
+                    <div className="text-3xl mb-1">{locked ? '🔒' : u.emoji}</div>
+                    <div className="font-bold text-gray-800 dark:text-white text-sm">{u.title}</div>
+                    <div className="text-xs text-gray-400 mt-0.5">{wordCount} words · ~{Math.ceil(wordCount * 0.5)} min</div>
+                    {done && <div className="absolute top-2 right-2 text-yellow-400 text-lg">⭐</div>}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
-  // ── computed ──
-  const flashWord  = flashWords[flashIdx] ?? null
-  const currentQ   = questions[qIdx]      ?? null
-  const totalQ     = questions.length
+  // ─── Calendar Screen ─────────────────────────────────────────────────────────
+  if (screen === 'calendar') {
+    return <CalendarScreen onBack={() => setScreen('map')} studyDates={studyDates} />
+  }
 
-  // ── screens ───────────────────────────────────────────────────────────────
-  return (
-    <div style={{ minHeight:'100vh', background:'linear-gradient(135deg,#f8f4ff 0%,#e8f4ff 100%)', padding:'24px 16px' }}>
+  // ─── Flashcard Screen ────────────────────────────────────────────────────────
+  if (screen === 'flashcard') {
+    const word = flashWords[flashIdx]
+    if (!word) return null
+    const isKanji = /[\u4E00-\u9FFF]/.test(word.japanese)
 
-      {/* ── MAP ── */}
-      {screen === 'map' && (
-        <div style={{ maxWidth:720, margin:'0 auto' }}>
-          <h1 style={{ fontSize:28, fontWeight:800, color:'#461E96', marginBottom:4 }}>📚 Lessons</h1>
-          <p style={{ color:'#666', marginBottom:24 }}>Choose a unit to start learning vocabulary</p>
-
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(160px,1fr))', gap:16 }}>
-            {UNITS.map(u => {
-              const done = progress.lessonsCompleted.includes(u.id)
-              return (
-                <button key={u.id} onClick={() => startUnit(u)} style={{
-                  background: done ? `${u.color}22` : 'white',
-                  border: `2px solid ${done ? u.color : '#e0d4ff'}`,
-                  borderRadius:16, padding:20, cursor:'pointer',
-                  textAlign:'left', transition:'all 0.2s',
-                  boxShadow: done ? `0 4px 12px ${u.color}33` : '0 2px 8px rgba(0,0,0,0.06)',
-                }}
-                onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-3px)')}
-                onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}>
-                  <div style={{ fontSize:32, marginBottom:8 }}>{u.emoji}</div>
-                  <div style={{ fontWeight:700, color:'#1a1a2e', fontSize:14 }}>{u.title}</div>
-                  <div style={{ display:'flex', alignItems:'center', gap:6, marginTop:6 }}>
-                    <span style={{
-                      fontSize:11, fontWeight:700, padding:'2px 8px', borderRadius:20,
-                      background: u.level === 'N5' ? '#461E9622' : '#E6008C22',
-                      color: u.level === 'N5' ? '#461E96' : '#E6008C'
-                    }}>{u.level}</span>
-                    {done && <span style={{ fontSize:11, color:u.color }}>✓ Done</span>}
-                  </div>
-                </button>
-              )
-            })}
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 flex flex-col">
+        {/* Progress bar */}
+        <div className="px-4 pt-4 pb-2">
+          <div className="flex items-center gap-3 mb-2">
+            <button onClick={() => setScreen('map')} className="text-purple-600 text-sm font-medium hover:underline">← Back</button>
+            <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+              <div className="bg-purple-600 h-2.5 rounded-full transition-all duration-300"
+                style={{ width: `${((flashIdx + 1) / flashWords.length) * 100}%` }} />
+            </div>
+            <span className="text-sm text-gray-500 font-medium">{flashIdx + 1}/{flashWords.length}</span>
           </div>
         </div>
-      )}
 
-      {/* ── INTRO ── */}
-      {screen === 'intro' && unit && (
-        <div style={{ maxWidth:480, margin:'0 auto', textAlign:'center' }}>
-          <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:8, marginBottom:24 }}>
-            <Bubble text={bubble}/>
-            <NekoCat mood={mood}/>
-          </div>
-          <div style={{
-            background:'white', borderRadius:20, padding:32,
-            boxShadow:'0 4px 24px rgba(70,30,150,0.12)', marginBottom:24
-          }}>
-            <div style={{ fontSize:48, marginBottom:12 }}>{unit.emoji}</div>
-            <h2 style={{ fontSize:24, fontWeight:800, color:'#1a1a2e', marginBottom:8 }}>{unit.title}</h2>
-            <p style={{ color:'#666', marginBottom:4 }}>
-              {flashWords.length} words · {unit.level} level
-            </p>
-            <p style={{ color:'#888', fontSize:13 }}>
-              Review flashcards, then take a quiz to test yourself!
-            </p>
-          </div>
-          <div style={{ display:'flex', gap:12 }}>
-            <button onClick={() => { setScreen('map'); say('にゃ！', 'idle') }} style={{
-              flex:1, padding:'14px 0', borderRadius:12, border:'2px solid #e0d4ff',
-              background:'white', color:'#461E96', fontWeight:700, fontSize:15, cursor:'pointer'
-            }}>← Back</button>
-            <button onClick={() => { setScreen('flashcard'); say('Let\'s go! にゃ！', 'excited') }} style={{
-              flex:2, padding:'14px 0', borderRadius:12, border:'none',
-              background:'linear-gradient(135deg,#461E96,#735CCC)',
-              color:'white', fontWeight:700, fontSize:15, cursor:'pointer',
-              boxShadow:'0 4px 12px rgba(70,30,150,0.4)'
-            }}>Start Lesson →</button>
-          </div>
+        {/* Cat */}
+        <div className="flex flex-col items-center px-4 py-2">
+          <SpeechBubble mood={mood} />
+          <NekoSan mood={mood} />
         </div>
-      )}
 
-      {/* ── FLASHCARD ── */}
-      {screen === 'flashcard' && flashWord && (
-        <div style={{ maxWidth:480, margin:'0 auto', textAlign:'center' }}>
-          {/* Header */}
-          <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:20 }}>
-            <button onClick={() => setScreen('map')} style={{
-              background:'none', border:'none', color:'#461E96',
-              fontWeight:700, fontSize:14, cursor:'pointer', padding:0
-            }}>← Back</button>
-            <div style={{ flex:1, height:8, background:'#e0d4ff', borderRadius:4 }}>
-              <div style={{
-                height:8, borderRadius:4, transition:'width 0.4s',
-                background:'linear-gradient(90deg,#461E96,#735CCC)',
-                width:`${((flashIdx+1)/flashWords.length)*100}%`
-              }}/>
+        {/* Card */}
+        <div className="flex-1 px-4 pb-6 flex flex-col gap-3">
+          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-6 text-center border border-purple-100 dark:border-gray-700">
+            <div className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
+              {unit?.title} · {unit?.level}
             </div>
-            <span style={{ color:'#461E96', fontWeight:700, fontSize:14 }}>{flashIdx+1}/{flashWords.length}</span>
-          </div>
 
-          <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:8, marginBottom:16 }}>
-            <Bubble text={bubble}/>
-            <NekoCat mood={mood}/>
-          </div>
+            {/* Japanese word */}
+            <div className="text-5xl font-black text-gray-900 dark:text-white mb-1">{word.japanese}</div>
 
-          <div style={{
-            background:'white', borderRadius:20, padding:32,
-            boxShadow:'0 4px 24px rgba(70,30,150,0.12)', marginBottom:20
-          }}>
-            <p style={{ fontSize:11, fontWeight:700, color:'#888', letterSpacing:2, marginBottom:12 }}>
-              {unit?.title?.toUpperCase()} · {flashWord.level}
-            </p>
-            <div style={{ fontSize:52, fontWeight:900, color:'#1a1a2e', marginBottom:8, lineHeight:1.1 }}>
-              {flashWord.japanese}
-            </div>
-            <div style={{ fontSize:18, color:'#461E96', marginBottom:12 }}>{flashWord.furigana}</div>
-            <button onClick={() => speak(flashWord.furigana)} style={{
-              background:'none', border:'none', color:'#00B4E6',
-              fontWeight:600, fontSize:14, cursor:'pointer', marginBottom:16
-            }}>🔊 Hear it</button>
+            {/* Furigana */}
+            {isKanji && <div className="text-lg text-purple-500 mb-1">{word.furigana}</div>}
 
-            {showMeaning ? (
-              <div style={{ animation:'fadeIn 0.3s ease' }}>
-                <div style={{
-                  background:'linear-gradient(135deg,#f8f4ff,#e8f4ff)',
-                  borderRadius:12, padding:16, marginBottom:8
-                }}>
-                  <p style={{ fontSize:22, fontWeight:800, color:'#1a1a2e', margin:0 }}>{flashWord.english}</p>
-                  <p style={{ fontSize:13, color:'#666', margin:'4px 0 0' }}>{flashWord.romaji}</p>
+            {/* Romaji toggle */}
+            <button onClick={() => setShowRomaji(r => !r)}
+              className="text-xs text-gray-400 hover:text-purple-500 transition-colors mb-2">
+              {showRomaji ? word.romaji : 'Show romaji'}
+            </button>
+
+            {/* Stroke display */}
+            {isKanji && <StrokeDisplay kanji={word.japanese[0]} />}
+
+            {/* Hear it */}
+            <button onClick={() => speak(word.furigana)}
+              className="mt-3 flex items-center gap-2 text-purple-600 hover:text-purple-800 text-sm font-medium mx-auto transition-colors">
+              🔊 Hear it
+            </button>
+
+            {/* Meaning flip */}
+            {!showMeaning ? (
+              <button onClick={() => { setShowMeaning(true); setMood('happy') }}
+                className="mt-4 w-full py-3 rounded-2xl border-2 border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-300 font-semibold hover:border-purple-400 hover:text-purple-600 transition-all">
+                Show meaning
+              </button>
+            ) : (
+              <div className="mt-4 space-y-3 text-left">
+                {/* English */}
+                <div className="bg-purple-50 dark:bg-purple-900/30 rounded-2xl p-3 text-center">
+                  <div className="text-2xl font-bold text-purple-700 dark:text-purple-300">{word.english}</div>
                 </div>
-                {flashWord.exampleJp && (
-                  <p style={{ fontSize:13, color:'#888', fontStyle:'italic', margin:'8px 0 0' }}>
-                    {flashWord.exampleJp}
-                  </p>
+
+                {/* Example sentence */}
+                {word.exampleJp && (
+                  <div className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-3">
+                    <div className="text-xs font-bold text-blue-400 uppercase tracking-wide mb-1">Example</div>
+                    <div className="text-sm font-medium text-gray-800 dark:text-gray-200">{word.exampleJp}</div>
+                    <div className="text-xs text-gray-500 mt-0.5">{word.exampleEn}</div>
+                    <button onClick={() => speak(word.exampleJp || '')}
+                      className="text-xs text-blue-500 hover:text-blue-700 mt-1">🔊 hear sentence</button>
+                  </div>
+                )}
+
+                {/* Mnemonic */}
+                <button onClick={() => setShowMnemonic(m => !m)}
+                  className="w-full text-xs text-amber-600 hover:text-amber-800 font-medium py-1 transition-colors">
+                  {showMnemonic ? '▲ Hide mnemonic' : '💡 Show memory trick'}
+                </button>
+                {showMnemonic && (
+                  <div className="bg-amber-50 dark:bg-amber-900/20 rounded-2xl p-3 text-xs text-amber-800 dark:text-amber-200 italic">
+                    {getMnemonic(word)}
+                  </div>
                 )}
               </div>
-            ) : (
-              <button onClick={handleShowMeaning} style={{
-                width:'100%', padding:'14px 0', borderRadius:12,
-                border:'2px solid #e0d4ff', background:'white',
-                color:'#461E96', fontWeight:700, fontSize:15, cursor:'pointer'
-              }}>Show meaning</button>
             )}
           </div>
 
-          {showMeaning && (
-            <button onClick={handleNextFlash} style={{
-              width:'100%', padding:'16px 0', borderRadius:12, border:'none',
-              background:'linear-gradient(135deg,#461E96,#735CCC)',
-              color:'white', fontWeight:700, fontSize:16, cursor:'pointer',
-              boxShadow:'0 4px 12px rgba(70,30,150,0.4)'
-            }}>
-              {flashIdx + 1 >= flashWords.length ? '🎯 Take Quiz →' : 'Next →'}
+          {/* Nav buttons */}
+          <div className="flex gap-3">
+            <button onClick={prevFlash} disabled={flashIdx === 0}
+              className="flex-1 py-3 rounded-2xl bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 font-semibold disabled:opacity-30 hover:bg-gray-200 transition-all">
+              ← Prev
+            </button>
+            <button onClick={nextFlash}
+              className="flex-[2] py-3 rounded-2xl bg-purple-600 text-white font-bold hover:bg-purple-700 active:scale-95 transition-all">
+              {flashIdx < flashWords.length - 1 ? 'Next →' : 'Start Quiz →'}
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // ─── Quiz Screen ─────────────────────────────────────────────────────────────
+  if (screen === 'quiz') {
+    if (questions.length === 0 || qIdx >= questions.length) return null
+    const q = questions[qIdx]
+
+    const questionLabel = q.type === 'en2jp'
+      ? `Which Japanese word means "${q.correct}"?`
+      : q.type === 'audio'
+      ? 'What does this word mean?'
+      : `What does "${q.word.japanese}" mean?`
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 flex flex-col">
+        {/* Progress bar */}
+        <div className="px-4 pt-4 pb-2">
+          <div className="flex items-center gap-3 mb-2">
+            <button onClick={() => setScreen('map')} className="text-purple-600 text-sm font-medium">← Back</button>
+            <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+              <div className="bg-purple-600 h-2.5 rounded-full transition-all duration-300"
+                style={{ width: `${(qIdx / questions.length) * 100}%` }} />
+            </div>
+            <span className="text-sm font-medium text-gray-500">{qIdx + 1}/{questions.length}</span>
+            {streak >= 2 && <span className="text-sm font-bold text-orange-500">🔥{streak}</span>}
+          </div>
+        </div>
+
+        {/* Cat */}
+        <div className="flex flex-col items-center px-4 py-1">
+          <SpeechBubble mood={mood} />
+          <NekoSan mood={mood} />
+        </div>
+
+        {/* Question card */}
+        <div className="flex-1 px-4 pb-6 flex flex-col gap-3">
+          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-5 border border-purple-100 dark:border-gray-700">
+            {/* Q type badge */}
+            <div className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3 flex items-center gap-2">
+              {q.type === 'audio' ? '🔊 Listening' : q.type === 'en2jp' ? '🇯🇵 English → Japanese' : '📖 Translation'}
+              <span className="ml-auto text-purple-500 text-xs">{unit?.title} · {unit?.level}</span>
+            </div>
+
+            {/* Word display */}
+            <div className="text-center mb-4">
+              {q.type === 'audio' ? (
+                <button onClick={() => speak(q.word.furigana)}
+                  className="mx-auto w-20 h-20 rounded-full bg-purple-100 hover:bg-purple-200 flex items-center justify-center text-4xl transition-all active:scale-95">
+                  🔊
+                </button>
+              ) : q.type === 'en2jp' ? (
+                <div className="text-3xl font-bold text-gray-800 dark:text-white">{q.word.english}</div>
+              ) : (
+                <>
+                  <div className="text-4xl font-black text-gray-900 dark:text-white">{q.word.japanese}</div>
+                  {/[\u4E00-\u9FFF]/.test(q.word.japanese) && (
+                    <div className="text-base text-purple-400 mt-1">{q.word.furigana}</div>
+                  )}
+                </>
+              )}
+              <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">{questionLabel}</div>
+            </div>
+
+            {/* Hear it again (for non-audio types) */}
+            {q.type !== 'audio' && (
+              <button onClick={() => speak(q.word.furigana)}
+                className="flex items-center gap-1 text-xs text-purple-500 hover:text-purple-700 mx-auto mb-3 transition-colors">
+                🔊 Tap to hear
+              </button>
+            )}
+
+            {/* Options — 2x2 grid */}
+            <div className="grid grid-cols-2 gap-3">
+              {q.options.map((opt, i) => {
+                const isEliminated = hint === opt
+                const isSelected   = selected === opt
+                const isCorrect    = opt === q.correct
+                let btnClass = 'relative py-4 px-3 rounded-2xl border-2 font-semibold text-sm transition-all text-center '
+                if (isEliminated) {
+                  btnClass += 'border-gray-200 bg-gray-50 text-gray-300 line-through cursor-not-allowed'
+                } else if (selected === null) {
+                  btnClass += 'border-purple-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white hover:border-purple-500 hover:bg-purple-50 active:scale-95 cursor-pointer'
+                } else if (isCorrect) {
+                  btnClass += 'border-green-400 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 scale-102'
+                } else if (isSelected) {
+                  btnClass += 'border-red-400 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+                } else {
+                  btnClass += 'border-gray-200 bg-gray-50 dark:bg-gray-800 text-gray-400 opacity-60'
+                }
+
+                // For en2jp type, show the Japanese word as option text
+                const displayOpt = q.type === 'en2jp'
+                  ? (vocabData.find(v => v.english === opt)?.japanese || opt)
+                  : opt
+
+                return (
+                  <button key={i} onClick={() => !isEliminated && handleAnswer(opt)} className={btnClass} disabled={isEliminated}>
+                    {selected !== null && isCorrect && <span className="absolute top-1 right-2 text-green-500">✓</span>}
+                    {selected !== null && isSelected && !isCorrect && <span className="absolute top-1 right-2 text-red-500">✗</span>}
+                    {displayOpt}
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* Hint button */}
+            {selected === null && (
+              <button onClick={useHint} className="mt-3 w-full text-xs text-amber-500 hover:text-amber-700 font-medium transition-colors py-1">
+                {hint ? '✓ Hint used — one wrong answer removed' : '💡 Use hint (remove one wrong answer)'}
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // ─── Result Screen ───────────────────────────────────────────────────────────
+  if (screen === 'result') {
+    const pct = Math.round((score / questions.length) * 100)
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 flex flex-col items-center justify-center p-6">
+        {showConfetti && <Confetti />}
+
+        <NekoSan mood={mood} />
+        <SpeechBubble mood={mood} />
+
+        {/* Stars */}
+        <div className="flex gap-2 mt-4 mb-2">
+          {[1,2,3].map(s => (
+            <span key={s} className={`text-4xl transition-all ${s <= stars ? 'opacity-100 scale-110' : 'opacity-20'}`}>⭐</span>
+          ))}
+        </div>
+
+        <div className="text-5xl font-black text-purple-700 dark:text-purple-300 mt-2">{pct}%</div>
+        <div className="text-gray-500 dark:text-gray-400 mt-1">{score} / {questions.length} correct</div>
+
+        {/* Wrong words review */}
+        {wrongWords.length > 0 && (
+          <div className="w-full max-w-sm mt-4 bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-lg border border-red-100">
+            <div className="text-sm font-bold text-red-500 mb-2">📝 Review these words:</div>
+            <div className="space-y-2">
+              {wrongWords.map(w => (
+                <div key={w.id} className="flex items-center gap-3 text-sm">
+                  <span className="font-bold text-gray-800 dark:text-white">{w.japanese}</span>
+                  <span className="text-gray-400">→</span>
+                  <span className="text-purple-600 dark:text-purple-300">{w.english}</span>
+                  <button onClick={() => speak(w.furigana)} className="ml-auto text-purple-400 hover:text-purple-600">🔊</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Buttons */}
+        <div className="flex flex-col gap-3 w-full max-w-sm mt-6">
+          {wrongWords.length > 0 && (
+            <button onClick={retryWrong}
+              className="py-4 rounded-2xl bg-red-500 hover:bg-red-600 text-white font-bold text-lg active:scale-95 transition-all">
+              🔁 Retry Wrong Words ({wrongWords.length})
             </button>
           )}
+          <button onClick={() => unit && startUnit(unit)}
+            className="py-4 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-lg active:scale-95 transition-all">
+            🔄 Redo Lesson
+          </button>
+          <button onClick={() => { setScreen('map'); setMood('idle') }}
+            className="py-4 rounded-2xl bg-white dark:bg-gray-800 border-2 border-purple-200 text-purple-700 dark:text-purple-300 font-bold text-lg hover:border-purple-400 active:scale-95 transition-all">
+            🗺️ Back to Map
+          </button>
         </div>
-      )}
+      </div>
+    )
+  }
 
-      {/* ── QUIZ ── */}
-      {screen === 'quiz' && currentQ && (
-        <div style={{ maxWidth:520, margin:'0 auto', textAlign:'center' }}>
-          {/* Header */}
-          <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:20 }}>
-            <span style={{ color:'#461E96', fontWeight:700, fontSize:14 }}>Question {qIdx+1}/{totalQ}</span>
-            <div style={{ flex:1, height:8, background:'#e0d4ff', borderRadius:4 }}>
-              <div style={{
-                height:8, borderRadius:4, transition:'width 0.4s',
-                background:'linear-gradient(90deg,#461E96,#735CCC)',
-                width:`${((qIdx+1)/totalQ)*100}%`
-              }}/>
-            </div>
-            <span style={{ color:'#00DC8C', fontWeight:700, fontSize:14 }}>⭐ {score}</span>
-          </div>
-
-          <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:8, marginBottom:16 }}>
-            <Bubble text={bubble}/>
-            <NekoCat mood={mood}/>
-          </div>
-
-          {/* Word card */}
-          <div style={{
-            background:'white', borderRadius:20, padding:24,
-            boxShadow:'0 4px 24px rgba(70,30,150,0.12)', marginBottom:20
-          }}>
-            <p style={{ fontSize:11, fontWeight:700, color:'#888', letterSpacing:2, marginBottom:8 }}>
-              What does this mean?
-            </p>
-            <div style={{ fontSize:48, fontWeight:900, color:'#1a1a2e', marginBottom:6 }}>
-              {currentQ.word.japanese}
-            </div>
-            <div style={{ fontSize:16, color:'#461E96' }}>{currentQ.word.furigana}</div>
-            <button onClick={() => speak(currentQ.word.furigana)} style={{
-              background:'none', border:'none', color:'#00B4E6',
-              fontWeight:600, fontSize:13, cursor:'pointer', marginTop:8
-            }}>🔊 Hear it</button>
-          </div>
-
-          {/* Options */}
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-            {currentQ.options.map((opt, i) => {
-              const isSelected = selected === opt
-              const isCorrect  = opt === currentQ.correct
-              const answered   = selected !== null
-
-              let bg = 'white'
-              let border = '2px solid #e0d4ff'
-              let color = '#1a1a2e'
-              let shadow = '0 2px 8px rgba(0,0,0,0.06)'
-
-              if (answered && isCorrect) {
-                bg = '#e8fff5'; border = '2px solid #00DC8C'; color = '#00995E'; shadow = '0 4px 12px rgba(0,220,140,0.3)'
-              } else if (answered && isSelected && !isCorrect) {
-                bg = '#fff0f5'; border = '2px solid #E6008C'; color = '#C0006A'; shadow = '0 4px 12px rgba(230,0,140,0.2)'
-              }
-
-              return (
-                <button key={i} onClick={() => handleAnswer(opt)} disabled={answered} style={{
-                  background: bg, border, borderRadius:14, padding:'16px 12px',
-                  color, fontWeight:600, fontSize:14, cursor: answered ? 'default' : 'pointer',
-                  boxShadow: shadow, transition:'all 0.25s', textAlign:'center',
-                  transform: answered && isCorrect ? 'scale(1.03)' : 'scale(1)'
-                }}>
-                  {answered && isCorrect && <span style={{ marginRight:6 }}>✅</span>}
-                  {answered && isSelected && !isCorrect && <span style={{ marginRight:6 }}>❌</span>}
-                  {opt}
-                </button>
-              )
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* ── RESULT ── */}
-      {screen === 'result' && unit && (
-        <div style={{ maxWidth:480, margin:'0 auto', textAlign:'center' }}>
-          <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:8, marginBottom:24 }}>
-            <Bubble text={bubble}/>
-            <NekoCat mood={mood}/>
-          </div>
-
-          <div style={{
-            background:'white', borderRadius:20, padding:40,
-            boxShadow:'0 4px 24px rgba(70,30,150,0.12)', marginBottom:24
-          }}>
-            <div style={{ fontSize:64, marginBottom:16 }}>
-              {score / totalQ >= 0.8 ? '🎉' : score / totalQ >= 0.5 ? '👍' : '💪'}
-            </div>
-            <h2 style={{ fontSize:28, fontWeight:800, color:'#1a1a2e', margin:'0 0 8px' }}>
-              {score}/{totalQ} Correct
-            </h2>
-            <div style={{
-              fontSize:48, fontWeight:900, marginBottom:8,
-              background:'linear-gradient(135deg,#461E96,#E6008C)',
-              WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent'
-            }}>
-              {Math.round((score/totalQ)*100)}%
-            </div>
-            <p style={{ color:'#666', marginBottom:0 }}>
-              {score / totalQ >= 0.8 ? 'Outstanding! You\'ve mastered this unit! 🌟' :
-               score / totalQ >= 0.5 ? 'Good effort! Keep practicing to improve!' :
-               'Don\'t give up! Review and try again!'}
-            </p>
-          </div>
-
-          <div style={{ display:'flex', gap:12 }}>
-            <button onClick={() => startUnit(unit)} style={{
-              flex:1, padding:'14px 0', borderRadius:12, border:'2px solid #e0d4ff',
-              background:'white', color:'#461E96', fontWeight:700, fontSize:15, cursor:'pointer'
-            }}>🔄 Try Again</button>
-            <button onClick={() => { setScreen('map'); say('にゃ！', 'idle') }} style={{
-              flex:1, padding:'14px 0', borderRadius:12, border:'none',
-              background:'linear-gradient(135deg,#461E96,#735CCC)',
-              color:'white', fontWeight:700, fontSize:15, cursor:'pointer',
-              boxShadow:'0 4px 12px rgba(70,30,150,0.4)'
-            }}>📚 All Units</button>
-          </div>
-        </div>
-      )}
-    </div>
-  )
+  return null
 }
