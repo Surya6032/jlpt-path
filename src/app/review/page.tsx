@@ -32,9 +32,9 @@ function buildQueue(progress: { reviewQueue: string[], srsMap: Record<string,{ne
     const v = vocabData.find(x => x.id === id)
     if (v) { items.push({ id, type:'vocab', front:v.japanese, back:v.english, reading:v.furigana, example:v.example }); return }
     const k = kanjiData.find(x => x.id === id)
-    if (k) { items.push({ id, type:'kanji', front:k.character, back:k.meaning, reading:k.onyomi+' / '+k.kunyomi, example:k.example }); return }
+    if (k) { items.push({ id, type:'kanji', front:k.kanji, back:k.meaning, reading:k.onyomi+' / '+k.kunyomi, example:k.exampleWord }); return }
     const g = grammarData.find(x => x.id === id)
-    if (g) { items.push({ id, type:'grammar', front:g.pattern, back:g.meaning, example:g.examples[0]?.jp }); return }
+    if (g) { items.push({ id, type:'grammar', front:g.title, back:g.meaning, example:g.examples[0]?.jp }); return }
   })
 
   // If review queue is empty, grab all vocab not yet in SRS
