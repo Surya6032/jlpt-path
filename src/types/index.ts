@@ -13,8 +13,19 @@ export interface KanjiItem {
   level: 'N5' | 'N4'; strokeCount: number; example: string; exampleReading: string; exampleMeaning: string; mnemonic?: string
 }
 export interface GrammarPoint {
-  id: string; pattern: string; meaning: string; level: 'N5' | 'N4'
-  explanation: string; examples: { jp: string; en: string }[]; notes?: string
+  id: string
+  title: string
+  structure: string
+  meaning: string
+  level: 'N5' | 'N4'
+  usageNotes: string
+  examples: { jp: string; furigana?: string; en: string }[]
+  commonMistakes?: string
+  relatedPatterns?: string[]
+  notes?: string
+  // legacy aliases kept for backward compat
+  pattern?: string
+  explanation?: string
 }
 export interface ReadingPassage {
   id: string; title: string; level: 'N5' | 'N4'; text: string; translation: string
