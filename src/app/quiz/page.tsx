@@ -20,7 +20,7 @@ function buildVocabQuestion(level: Level) {
   const word = pool[Math.floor(Math.random() * pool.length)]
   const others = pool.filter(v => v.id !== word.id && v.english !== word.english).sort(() => Math.random() - 0.5).slice(0, 3)
   const options = shuffle([...others.map(v => v.english), word.english])
-  return { prompt: word.japanese + ' (' + word.romaji + ')', options, answer: options.indexOf(word.english), explanation: word.exampleJp + ' — ' + word.exampleEn }
+  return { prompt: word.japanese + ' (' + word.romaji + ')', options, answer: options.indexOf(word.english), explanation: (word.example || '') + (word.exampleEn ? ' — ' + word.exampleEn : '') }
 }
 
 function buildKanjiQuestion(level: Level) {
