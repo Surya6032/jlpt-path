@@ -1,158 +1,274 @@
 'use client'
-import { useState, useMemo } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useProgress } from '@/store/progress'
 import { vocabData } from '@/data/vocab'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
-import { useProgress } from '@/store/progress'
-import { Search, Volume2, BookmarkPlus, BookmarkCheck, ChevronRight, Filter } from 'lucide-react'
+import { ProgressBar } from '@/components/ui/ProgressBar'
+import { BookOpen, Volume2, ChevronLeft, ChevronRight, Search, Star, RotateCcw, Check, X } from 'lucide-react'
+import type { VocabWord } from '@/types'
 
-type JLPTFilter = 'All' | 'N5' | 'N4'
-type ViewMode = 'list' | 'flashcard' | 'quiz'
+type Mode = 'browse' | 'flashcard' | 'quiz'
 
-function playAudio(text: string) {
-  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-    const u = new SpeechSynthesisUtterance(text); u.lang = 'ja-JP'; u.rate = 0.85
-    window.speechSynthesis.speak(u)
-  }
+const LEVELS = ['All', 'N5', 'N4'] as const
+const categories = ['All', ...new Set(vocabData.map(v => v.category))]
+
+function speak(text: string) {
+  if (typeof window === 'undefined') return
+  const u = new SpeechSynthesisUtterance(text)
+  u.lang = 'ja-JP'; u.rate = 0.85
+  speechSynthesis.cancel(); speechSynthesis.speak(u)
 }
 
-const categories = ['All', 'Greetings', 'Family', 'Food', 'Time', 'Locations', 'Verbs', 'Adjectives', 'School', 'Work', 'Weather', 'Numbers', 'Common', 'Shopping', 'Travel', 'Health']
+function buildOptions(correct: VocabWord, all: VocabWord[]): string[] {
+  const pool = all.filter(v => v.id !== correct.id)
+  const shuffled = pool.sort(() => Math.random() - 0.5).slice(0, 3).map(v => v.english)
+  const opts = [...shuffled, correct.english].sort(() => Math.random() - 0.5)
+  return opts
+}
 
-export default function VocabPage() {
-  const { progress, markVocabLearned } = useProgress()
-  const [search, setSearch] = useState('')
-  const [level, setLevel] = useState<JLPTFilter>('All')
+export default function VocabularyPage() {
+  const { progress, markVocabLearned, updateSRS, addXP, recordStudyDay } = useProgress()
+  const [level, setLevel] = useState<'All'|'N5'|'N4'>('All')
   const [cat, setCat] = useState('All')
-  const [view, setView] = useState<ViewMode>('list')
-  const [saved, setSaved] = useState<string[]>([])
+  const [search, setSearch] = useState('')
+  const [mode, setMode] = useState<Mode>('browse')
   const [cardIdx, setCardIdx] = useState(0)
-  const [revealed, setRevealed] = useState(false)
+  const [flipped, setFlipped] = useState(false)
+  const [showRomaji, setShowRomaji] = useState(false)
+  const [selected, setSelected] = useState<string|null>(null)
+  const [showMnemonic, setShowMnemonic] = useState(false)
 
-  const filtered = useMemo(() =>
-    vocabData.filter(v =>
-      (level === 'All' || v.level === level) &&
-      (cat === 'All' || v.category === cat) &&
-      (search === '' || v.japanese.includes(search) || v.english.toLowerCase().includes(search.toLowerCase()) || v.romaji.toLowerCase().includes(search.toLowerCase()))
-    ), [level, cat, search])
+  useEffect(() => { recordStudyDay() }, [])
 
-  const toggleSaved = (id: string) => setSaved(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id])
+  const filtered = vocabData.filter(v => {
+    if (level !== 'All' && v.level !== level) return false
+    if (cat !== 'All' && v.category !== cat) return false
+    if (search && !v.japanese.includes(search) && !v.english.toLowerCase().includes(search.toLowerCase()) && !v.furigana.includes(search)) return false
+    return true
+  })
+
+  const current = filtered[cardIdx] || filtered[0]
+  const isLearned = current ? progress.vocabLearned.includes(current.id) : false
+  const options = current ? buildOptions(current, filtered.length >= 4 ? filtered : vocabData) : []
+
+  function nextCard() { setCardIdx(i => (i+1) % filtered.length); setFlipped(false); setShowMnemonic(false); setSelected(null) }
+  function prevCard() { setCardIdx(i => (i-1+filtered.length) % filtered.length); setFlipped(false); setShowMnemonic(false); setSelected(null) }
+
+  function handleQuizAnswer(opt: string) {
+    if (selected) return
+    setSelected(opt)
+    const correct = opt === current.english
+    updateSRS(current.id, correct)
+    if (correct) { markVocabLearned(current.id); addXP(5) }
+    setTimeout(() => { nextCard() }, 1300)
+  }
+
+  const learnedCount = filtered.filter(v => progress.vocabLearned.includes(v.id)).length
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-fade-in">
       {/* Header */}
-      <div className="mb-8">
-        <Badge label="N5 & N4" variant="level" className="mb-2" />
-        <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white">Vocabulary</h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">{vocabData.length} words across N5 and N4. Filter by level, browse by category, or use flashcards.</p>
-      </div>
-
-      {/* Controls */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <div className="relative flex-1">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search Japanese, English, or romaji..." className="w-full pl-9 pr-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-indigo/20" />
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white flex items-center gap-2">
+            <BookOpen size={28} className="text-brand-indigo"/> Vocabulary
+          </h1>
+          <p className="text-gray-500 mt-1">{filtered.length} words · {learnedCount} learned</p>
         </div>
         <div className="flex gap-2">
-          {(['All','N5','N4'] as JLPTFilter[]).map(l => (
-            <Button key={l} variant={level === l ? 'primary' : 'secondary'} size="sm" onClick={() => setLevel(l)}>{l}</Button>
-          ))}
-        </div>
-        <div className="flex gap-2">
-          {(['list','flashcard'] as ViewMode[]).map(m => (
-            <Button key={m} variant={view === m ? 'primary' : 'secondary'} size="sm" onClick={() => { setView(m); setCardIdx(0); setRevealed(false) }}>
-              {m === 'list' ? 'List' : 'Flashcards'}
-            </Button>
+          {(['browse','flashcard','quiz'] as Mode[]).map(m => (
+            <button key={m} onClick={() => { setMode(m); setCardIdx(0); setFlipped(false); setSelected(null) }}
+              className={`px-4 py-2 rounded-xl text-sm font-medium capitalize transition-colors
+                ${mode===m ? 'bg-brand-indigo text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200'}`}>
+              {m}
+            </button>
           ))}
         </div>
       </div>
 
-      {/* Category chips */}
-      <div className="flex flex-wrap gap-2 mb-6">
-        {categories.map(c => (
-          <button key={c} onClick={() => setCat(c)} className={`px-3 py-1 rounded-full text-xs font-medium transition-colors border ${cat === c ? 'bg-brand-indigo text-white border-brand-indigo' : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-brand-indigo hover:text-brand-indigo dark:hover:text-indigo-400'}`}>{c}</button>
-        ))}
+      {/* Filters */}
+      <div className="flex flex-wrap gap-3 mb-6">
+        <div className="relative">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"/>
+          <input value={search} onChange={e => { setSearch(e.target.value); setCardIdx(0) }}
+            placeholder="Search words..."
+            className="pl-9 pr-4 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-indigo"/>
+        </div>
+        <div className="flex gap-1">
+          {LEVELS.map(l => (
+            <button key={l} onClick={() => { setLevel(l); setCardIdx(0) }}
+              className={`px-3 py-2 rounded-xl text-sm font-medium transition-colors
+                ${level===l ? 'bg-brand-indigo text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200'}`}>
+              {l}
+            </button>
+          ))}
+        </div>
+        <select value={cat} onChange={e => { setCat(e.target.value); setCardIdx(0) }}
+          className="px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none">
+          {categories.map(c => <option key={c}>{c}</option>)}
+        </select>
       </div>
 
-      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{filtered.length} words found</p>
+      <ProgressBar value={learnedCount} max={filtered.length || 1} showPercent={false}/>
+      <p className="text-xs text-gray-400 mt-1 mb-6">{learnedCount}/{filtered.length} learned in this filter</p>
 
-      {/* ── LIST VIEW ── */}
-      {view === 'list' && (
-        <div className="space-y-3">
-          {filtered.map(v => (
-            <Card key={v.id} hover className="group">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-start gap-4">
-                  <div className="text-center min-w-[60px]">
-                    <div className="jp text-2xl font-bold text-gray-900 dark:text-white">{v.japanese}</div>
-                    <div className="text-xs text-gray-400 dark:text-gray-500">{v.romaji}</div>
-                  </div>
-                  <div>
-                    <div className="font-semibold text-gray-800 dark:text-gray-200">{v.english}</div>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Badge label={v.level} variant="level" />
-                      <span className="text-xs text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">{v.category}</span>
-                    </div>
-                    <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                      <span className="jp">{v.exampleJp}</span>
-                      <div className="text-xs mt-0.5 text-gray-400 dark:text-gray-500">{v.exampleEn}</div>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <button onClick={() => playAudio(v.japanese)} className="p-1.5 rounded-lg text-gray-400 hover:text-brand-indigo hover:bg-indigo-50 dark:hover:bg-indigo-900/20">
-                    <Volume2 size={16} />
+      {filtered.length === 0 && (
+        <div className="text-center py-20 text-gray-400">No words match your filters.</div>
+      )}
+
+      {/* BROWSE MODE */}
+      {mode === 'browse' && filtered.length > 0 && (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filtered.map(word => {
+            const learned = progress.vocabLearned.includes(word.id)
+            return (
+              <Card key={word.id} className={`relative transition-all ${learned ? 'border-green-200 dark:border-green-800' : ''}`}>
+                {learned && <div className="absolute top-3 right-3 text-green-500 text-xs font-bold">✓</div>}
+                <div className="text-3xl font-bold text-gray-900 dark:text-white mb-1">{word.japanese}</div>
+                <div className="text-sm text-gray-500 mb-1">{word.furigana}</div>
+                <div className="text-xs text-gray-400 mb-2">{word.romaji}</div>
+                <div className="font-semibold text-brand-indigo mb-2">{word.english}</div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Badge>{word.level}</Badge>
+                  <span className="text-xs text-gray-400">{word.category}</span>
+                  <button onClick={() => speak(word.furigana)} className="ml-auto text-gray-400 hover:text-brand-indigo">
+                    <Volume2 size={16}/>
                   </button>
-                  <button onClick={() => toggleSaved(v.id)} className={`p-1.5 rounded-lg transition-colors ${saved.includes(v.id) ? 'text-brand-indigo' : 'text-gray-400 hover:text-brand-indigo'}`}>
-                    {saved.includes(v.id) ? <BookmarkCheck size={16} /> : <BookmarkPlus size={16} />}
-                  </button>
-                  {!progress.vocabLearned.includes(v.id) && (
-                    <button onClick={() => markVocabLearned(v.id)} className="text-xs text-green-600 dark:text-green-400 hover:underline font-medium">Mark learned</button>
-                  )}
-                  {progress.vocabLearned.includes(v.id) && (
-                    <span className="text-xs text-green-600 dark:text-green-400 font-medium">✓ Learned</span>
-                  )}
                 </div>
-              </div>
-            </Card>
-          ))}
+                {word.example && (
+                  <div className="mt-2 text-xs text-gray-500 bg-gray-50 dark:bg-gray-800/50 rounded-lg p-2">
+                    {word.example}<br/><span className="text-gray-400">{word.exampleEn}</span>
+                  </div>
+                )}
+                {!learned && (
+                  <button onClick={() => { markVocabLearned(word.id); addXP(3) }}
+                    className="mt-3 w-full text-xs py-1.5 bg-indigo-50 dark:bg-indigo-900/20 text-brand-indigo rounded-lg hover:bg-indigo-100 font-medium">
+                    Mark as Learned ✓
+                  </button>
+                )}
+              </Card>
+            )
+          })}
         </div>
       )}
 
-      {/* ── FLASHCARD VIEW ── */}
-      {view === 'flashcard' && filtered.length > 0 && (() => {
-        const v = filtered[cardIdx % filtered.length]
-        return (
-          <div className="max-w-md mx-auto">
-            <div className="text-sm text-gray-500 dark:text-gray-400 mb-4 text-center">{(cardIdx % filtered.length) + 1} / {filtered.length}</div>
-            <Card className="text-center p-10 cursor-pointer min-h-[260px] flex flex-col justify-center" onClick={() => setRevealed(!revealed)}>
-              <div className="jp text-5xl font-bold text-gray-900 dark:text-white mb-2">{v.japanese}</div>
-              <div className="text-gray-400 dark:text-gray-500 text-sm mb-4">{v.romaji}</div>
-              {revealed ? (
-                <div className="animate-fade-in">
-                  <div className="text-xl font-bold text-brand-indigo mb-3">{v.english}</div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400 jp">{v.exampleJp}</div>
-                  <div className="text-xs text-gray-400 mt-1">{v.exampleEn}</div>
-                </div>
-              ) : (
-                <p className="text-sm text-gray-400">Tap to reveal translation</p>
-              )}
-            </Card>
-            <div className="flex gap-3 mt-4 justify-center">
-              <Button variant="secondary" size="sm" onClick={() => { setCardIdx(i => Math.max(0, i - 1)); setRevealed(false) }}>← Back</Button>
-              <Button size="sm" onClick={() => playAudio(v.japanese)}><Volume2 size={14} /></Button>
-              <Button variant="secondary" size="sm" onClick={() => { setCardIdx(i => i + 1); setRevealed(false) }}>Next →</Button>
+      {/* FLASHCARD MODE */}
+      {mode === 'flashcard' && filtered.length > 0 && current && (
+        <div className="max-w-lg mx-auto">
+          <div className="flex items-center justify-between mb-4 text-sm text-gray-500">
+            <span>{cardIdx+1} / {filtered.length}</span>
+            <div className="flex gap-2">
+              <button onClick={() => setShowRomaji(r => !r)}
+                className="px-3 py-1 rounded-lg bg-gray-100 dark:bg-gray-800 text-xs font-medium hover:bg-gray-200 transition-colors">
+                {showRomaji ? 'Hide' : 'Show'} Romaji
+              </button>
             </div>
-            {!progress.vocabLearned.includes(v.id) && (
-              <div className="text-center mt-3">
-                <Button size="sm" variant="ghost" onClick={() => markVocabLearned(v.id)} className="text-green-600 dark:text-green-400">
-                  ✓ Mark as Learned
-                </Button>
+          </div>
+
+          <div className="cursor-pointer" onClick={() => setFlipped(f => !f)}>
+            <Card className="min-h-[300px] flex flex-col items-center justify-center text-center">
+              <div className="text-xs font-medium text-gray-400 uppercase mb-4">{current.category} · {current.level}</div>
+              <div className="text-5xl font-bold text-gray-900 dark:text-white mb-2">{current.japanese}</div>
+              <div className="text-lg text-gray-500 mb-1">{current.furigana}</div>
+              {showRomaji && <div className="text-sm text-gray-400 mb-2">{current.romaji}</div>}
+              <button onClick={e => { e.stopPropagation(); speak(current.furigana) }}
+                className="flex items-center gap-1 text-brand-indigo text-sm mt-2 hover:opacity-80">
+                <Volume2 size={16}/> Hear it
+              </button>
+
+              {flipped && (
+                <div className="mt-4 animate-fade-in w-full">
+                  <div className="text-2xl font-bold text-brand-indigo mb-3">{current.english}</div>
+                  {current.example && (
+                    <div className="text-sm text-gray-500 bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3">
+                      <div>{current.example}</div>
+                      <div className="text-gray-400 mt-1">{current.exampleEn}</div>
+                      <button onClick={e => { e.stopPropagation(); speak(current.example!) }}
+                        className="text-brand-indigo mt-1 hover:opacity-80 inline-flex items-center gap-1 text-xs">
+                        <Volume2 size={12}/> Hear example
+                      </button>
+                    </div>
+                  )}
+                  {current.mnemonic && (
+                    <div className="mt-3 text-xs text-purple-600 bg-purple-50 dark:bg-purple-900/20 rounded-xl px-4 py-2">
+                      💡 {current.mnemonic}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {!flipped && <p className="text-gray-400 text-sm mt-6 animate-pulse">Tap to reveal meaning</p>}
+            </Card>
+          </div>
+
+          <div className="flex gap-3 mt-4">
+            <button onClick={prevCard} className="flex items-center gap-1 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-xl hover:bg-gray-200 transition-colors">
+              <ChevronLeft size={18}/> Prev
+            </button>
+            {flipped && !isLearned && (
+              <button onClick={() => { markVocabLearned(current.id); addXP(5); nextCard() }}
+                className="flex-1 py-2 bg-green-500 text-white rounded-xl font-medium hover:bg-green-600 transition-colors flex items-center justify-center gap-2">
+                <Check size={18}/> Learned!
+              </button>
+            )}
+            {flipped && isLearned && (
+              <div className="flex-1 py-2 bg-green-50 dark:bg-green-900/20 text-green-600 rounded-xl font-medium text-center">
+                ✓ Learned
               </div>
             )}
+            <button onClick={nextCard} className="flex items-center gap-1 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-xl hover:bg-gray-200 transition-colors">
+              Next <ChevronRight size={18}/>
+            </button>
           </div>
-        )
-      })()}
+        </div>
+      )}
+
+      {/* QUIZ MODE */}
+      {mode === 'quiz' && filtered.length >= 4 && current && (
+        <div className="max-w-lg mx-auto">
+          <div className="flex items-center justify-between mb-4 text-sm text-gray-500">
+            <span>{cardIdx+1} / {filtered.length}</span>
+            <span className="text-green-500 font-medium">{learnedCount} learned ✓</span>
+          </div>
+
+          <Card className="mb-4 text-center">
+            <div className="text-xs text-gray-400 uppercase mb-3">{current.category} · {current.level}</div>
+            <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">{current.japanese}</div>
+            <div className="text-gray-500">{current.furigana}</div>
+            <button onClick={() => speak(current.furigana)} className="mt-2 text-brand-indigo flex items-center gap-1 mx-auto text-sm hover:opacity-80">
+              <Volume2 size={16}/> Hear it
+            </button>
+            <div className="mt-4 text-sm font-semibold text-gray-700 dark:text-gray-300">What does this mean?</div>
+          </Card>
+
+          <div className="grid grid-cols-2 gap-3">
+            {options.map(opt => {
+              const isCorrect = opt === current.english
+              let cls = 'border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 hover:border-brand-indigo'
+              if (selected) {
+                if (opt === selected && isCorrect) cls = 'border-2 border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700'
+                else if (opt === selected && !isCorrect) cls = 'border-2 border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700'
+                else if (isCorrect) cls = 'border-2 border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700'
+                else cls = 'border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-400'
+              }
+              return (
+                <button key={opt} onClick={() => handleQuizAnswer(opt)}
+                  disabled={!!selected}
+                  className={`p-4 rounded-2xl font-medium text-sm transition-all text-left ${cls}`}>
+                  {selected && isCorrect && <span className="mr-1">✓</span>}
+                  {selected && opt === selected && !isCorrect && <span className="mr-1">✗</span>}
+                  {opt}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
+      {mode === 'quiz' && filtered.length < 4 && (
+        <div className="text-center text-gray-400 py-10">Need at least 4 words in your filter for quiz mode.</div>
+      )}
     </div>
   )
 }

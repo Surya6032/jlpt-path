@@ -1,129 +1,218 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useProgress } from '@/store/progress'
+import { vocabData } from '@/data/vocab'
+import { kanjiData } from '@/data/kanji'
+import { grammarData } from '@/data/grammar'
 import { Card } from '@/components/ui/Card'
+import { ProgressBar } from '@/components/ui/ProgressBar'
 import { Button } from '@/components/ui/Button'
-import { Badge } from '@/components/ui/Badge'
-import { CalendarDays, Clock, Target, CheckCircle, BookOpen, Brain, PenLine, Headphones } from 'lucide-react'
+import { Target, CheckCircle, Circle, BookOpen, Brain, PenLine, RefreshCcw, Flame } from 'lucide-react'
 
-const plans = {
-  15: [
-    { day: 1, tasks: ['Hiragana: 5 characters', 'Vocabulary: 5 words', 'Daily phrase'] },
-    { day: 2, tasks: ['Hiragana: 5 characters (review)', 'Vocabulary flashcards', 'Grammar: read 1 point'] },
-    { day: 3, tasks: ['Katakana: 5 characters', 'Vocabulary quiz (10 words)', 'Review yesterday'] },
-    { day: 4, tasks: ['Katakana review', 'Grammar: 1 new point', 'Vocabulary: 5 new words'] },
-    { day: 5, tasks: ['Reading passage (N5)', 'Vocabulary review', 'Mini quiz'] },
-    { day: 6, tasks: ['Kanji: 2 N5 kanji', 'Listening exercise', 'Daily phrase'] },
-    { day: 7, tasks: ['Weekly review', 'Flashcard review', 'Progress check'] },
-  ],
-  30: [
-    { day: 1, tasks: ['Hiragana: full row', '10 vocab words', 'Grammar: です/ます', 'Daily phrase'] },
-    { day: 2, tasks: ['Hiragana quiz', 'Vocab flashcards (15)', 'Grammar: は particle', 'Reading 5 min'] },
-    { day: 3, tasks: ['Katakana: first row', '10 vocab (food)', 'Grammar: を particle', 'Listening exercise'] },
-    { day: 4, tasks: ['Katakana quiz', 'Kanji: 3 N5', 'Grammar practice quiz', 'Vocab review'] },
-    { day: 5, tasks: ['Reading: N5 passage', 'Grammar: に/で particles', 'Vocab: adjectives', 'Daily phrases x3'] },
-    { day: 6, tasks: ['Mixed vocab quiz (20)', 'Kanji: 3 more N5', 'Listening: restaurant', 'Weak items review'] },
-    { day: 7, tasks: ['Full week review', 'Mock quiz (10 Q)', 'Progress analytics', 'Plan next week'] },
-  ],
-  60: [
-    { day: 1, tasks: ['Hiragana: 2 rows + quiz', '20 vocab words', 'Grammar: 3 points', 'N5 reading passage', 'Daily phrases'] },
-    { day: 2, tasks: ['Katakana: 2 rows + quiz', 'Vocab flashcards (25)', 'Grammar quiz', 'Listening exercise (2)', 'Kanji: 5 N5'] },
-    { day: 3, tasks: ['Hiragana/Katakana revision', 'Food & travel vocab', 'Grammar: て-form intro', 'Reading passage 2', 'Pronunciation practice'] },
-    { day: 4, tasks: ['Kanji: 5 more N5', 'Grammar: ている', 'Vocab quiz (30)', 'Listening comprehension', 'Review weak items'] },
-    { day: 5, tasks: ['N5 reading passage 3', 'Grammar deep dive', 'Kanji quiz', 'Vocab: adjectives & verbs', 'Daily phrases x5'] },
-    { day: 6, tasks: ['Full N5 mock quiz', 'Weak area focus session', 'Listening x2', 'Grammar review', 'Analytics check'] },
-    { day: 7, tasks: ['N5 mini mock test', 'Review all missed answers', 'Spaced review session', 'Plan N4 intro', 'Celebrate progress!'] },
-  ],
-}
+type Task = { id: string; label: string; href: string; icon: string; done: boolean }
 
-const roadmap = [
-  { phase: 'Week 1–2', title: 'Foundations', items: ['Hiragana (all 46)', 'Katakana (all 46)', 'Basic pronunciation', 'Greetings & phrases', 'Numbers 1–100'], badge: 'Beginner' as const },
-  { phase: 'Week 3–6', title: 'N5 Core', items: ['N5 vocabulary (1–100)', 'N5 grammar points 1–5', 'N5 kanji batch 1', 'First N5 reading passage', 'N5 listening exercise'], badge: 'N5' as const },
-  { phase: 'Week 7–10', title: 'N5 Completion', items: ['N5 vocabulary complete', 'N5 grammar all points', 'All N5 kanji', 'All N5 reading passages', 'N5 mock test'], badge: 'N5' as const },
-  { phase: 'Week 11–16', title: 'N4 Introduction', items: ['N4 vocabulary (1–80)', 'N4 grammar points 1–5', 'N4 kanji batch 1', 'N4 reading passages', 'N4 listening'], badge: 'N4' as const },
-  { phase: 'Week 17–22', title: 'N4 Mastery', items: ['N4 vocabulary complete', 'All N4 grammar', 'All N4 kanji', 'N4 mock test pass 60%+', 'Full review'], badge: 'N4' as const },
-]
+function getTodayKey() { return `jlpt-planner-${new Date().toISOString().split('T')[0]}` }
 
 export default function PlannerPage() {
-  const [session, setSession] = useState<15 | 30 | 60>(30)
-  const [completedTasks, setCompletedTasks] = useState<string[]>([])
+  const { progress, addXP, recordStudyDay } = useProgress()
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [loaded, setLoaded] = useState(false)
 
-  const toggleTask = (key: string) =>
-    setCompletedTasks(prev => prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key])
+  // Build dynamic tasks from real progress
+  function buildTasks(): Task[] {
+    const base: Task[] = []
+
+    // Vocab task
+    const unlearnedVocab = vocabData.filter(v => !progress.vocabLearned.includes(v.id))
+    if (unlearnedVocab.length > 0) {
+      base.push({ id:'vocab', label:`Learn ${Math.min(5, unlearnedVocab.length)} new vocab words`, href:'/learn/vocabulary', icon:'📖', done:false })
+    }
+
+    // Kanji task
+    const unlearnedKanji = kanjiData.filter(k => !progress.kanjiLearned.includes(k.id))
+    if (unlearnedKanji.length > 0) {
+      base.push({ id:'kanji', label:`Study ${Math.min(3, unlearnedKanji.length)} new kanji`, href:'/learn/kanji', icon:'🔠', done:false })
+    }
+
+    // Grammar task
+    const unmastered = grammarData.filter(g => !progress.grammarMastered.includes(g.id))
+    if (unmastered.length > 0) {
+      base.push({ id:'grammar', label:`Review ${Math.min(2, unmastered.length)} grammar points`, href:'/learn/grammar', icon:'📝', done:false })
+    }
+
+    // Review task
+    if (progress.reviewQueue.length > 0) {
+      base.push({ id:'review', label:`Complete SRS review (${progress.reviewQueue.length} due)`, href:'/review', icon:'🔄', done:false })
+    }
+
+    // Lesson task
+    base.push({ id:'lesson', label:'Complete one lesson unit', href:'/learn/lessons', icon:'🎓', done:false })
+
+    // Quiz task
+    base.push({ id:'quiz', label:'Take a vocabulary quiz', href:'/quiz', icon:'🧠', done:false })
+
+    return base
+  }
+
+  useEffect(() => {
+    recordStudyDay()
+    const saved = localStorage.getItem(getTodayKey())
+    if (saved) {
+      const savedTasks: Task[] = JSON.parse(saved)
+      const fresh = buildTasks()
+      // Merge done status from saved
+      const merged = fresh.map(t => ({ ...t, done: savedTasks.find(s => s.id === t.id)?.done ?? false }))
+      setTasks(merged)
+    } else {
+      setTasks(buildTasks())
+    }
+    setLoaded(true)
+  }, [])
+
+  useEffect(() => {
+    if (loaded) localStorage.setItem(getTodayKey(), JSON.stringify(tasks))
+  }, [tasks, loaded])
+
+  function toggleTask(id: string) {
+    setTasks(ts => {
+      const updated = ts.map(t => {
+        if (t.id !== id) return t
+        if (!t.done) addXP(10) // award XP on completion
+        return { ...t, done: !t.done }
+      })
+      return updated
+    })
+  }
+
+  const doneTasks = tasks.filter(t => t.done).length
+  const pct = tasks.length > 0 ? Math.round((doneTasks / tasks.length) * 100) : 0
+
+  // Weekly plan overview
+  const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
+  const focusMap: Record<string,string[]> = {
+    Monday:    ['📖 Vocabulary: 10 new words', '🔄 SRS Review'],
+    Tuesday:   ['🔠 Kanji: 5 new characters',  '📝 Grammar: 1 point'],
+    Wednesday: ['🎧 Listening practice',         '📖 Vocabulary review'],
+    Thursday:  ['🔠 Kanji review',              '🧠 Quiz: Vocabulary N5'],
+    Friday:    ['📝 Grammar: 1 point',          '🔄 SRS Review'],
+    Saturday:  ['📚 Reading practice',           '🎓 Full lesson unit'],
+    Sunday:    ['🔄 Full SRS review',            '📊 Check analytics'],
+  }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-fade-in">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-fade-in">
       <div className="mb-8">
         <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white flex items-center gap-3">
-          <CalendarDays size={28} className="text-brand-indigo" /> Study Planner
+          <Target size={28} className="text-brand-indigo"/> Study Planner
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Personalized daily plans and your full N5 → N4 roadmap.</p>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">Your personalized daily plan based on real progress.</p>
       </div>
 
-      {/* Session selector */}
+      {/* Streak + XP banner */}
+      <div className="grid sm:grid-cols-3 gap-4 mb-8">
+        <Card className="text-center">
+          <div className="text-2xl font-extrabold text-orange-500">{progress.streak} 🔥</div>
+          <div className="text-xs text-gray-400 mt-1">Current Streak</div>
+        </Card>
+        <Card className="text-center">
+          <div className="text-2xl font-extrabold text-yellow-500">{progress.xpToday || 0} ⚡</div>
+          <div className="text-xs text-gray-400 mt-1">XP Today</div>
+        </Card>
+        <Card className="text-center">
+          <div className="text-2xl font-extrabold text-brand-indigo">{progress.vocabLearned.length}</div>
+          <div className="text-xs text-gray-400 mt-1">Words Learned</div>
+        </Card>
+      </div>
+
+      {/* Today's tasks */}
       <Card className="mb-8">
-        <h2 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-          <Clock size={18} className="text-brand-indigo" /> Daily Study Plan
-        </h2>
-        <div className="flex gap-3 mb-6 flex-wrap">
-          {([15, 30, 60] as const).map(n => (
-            <Button key={n} variant={session === n ? 'primary' : 'secondary'} size="sm" onClick={() => setSession(n)}>
-              <Clock size={14} /> {n} min/day
-            </Button>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-extrabold text-gray-900 dark:text-white flex items-center gap-2">
+            📅 Today's Tasks
+          </h2>
+          <span className="text-sm font-medium text-gray-500">{doneTasks}/{tasks.length} done</span>
+        </div>
+        <ProgressBar value={doneTasks} max={tasks.length || 1} showPercent={false}/>
+        {pct === 100 && <div className="text-center text-green-600 font-bold text-sm mt-2">🎉 All done! Great work today!</div>}
+
+        <div className="mt-4 space-y-3">
+          {tasks.map(task => (
+            <button key={task.id} onClick={() => toggleTask(task.id)}
+              className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 text-left transition-all
+                ${task.done
+                  ? 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20'
+                  : 'border-gray-200 dark:border-gray-700 hover:border-brand-indigo hover:bg-indigo-50 dark:hover:bg-indigo-900/10'
+                }`}>
+              {task.done
+                ? <CheckCircle size={22} className="text-green-500 flex-shrink-0"/>
+                : <Circle size={22} className="text-gray-300 flex-shrink-0"/>
+              }
+              <span className="text-xl">{task.icon}</span>
+              <div className="flex-1">
+                <span className={`font-medium ${task.done ? 'line-through text-gray-400' : 'text-gray-800 dark:text-gray-100'}`}>
+                  {task.label}
+                </span>
+                {!task.done && <span className="block text-xs text-gray-400 mt-0.5">+10 XP on completion</span>}
+              </div>
+              {task.done && <span className="text-xs font-bold text-green-500">+10 XP ✓</span>}
+            </button>
           ))}
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {plans[session].map(d => (
-            <div key={d.day} className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4">
-              <div className="font-bold text-gray-900 dark:text-white text-sm mb-3">Day {d.day}</div>
-              <ul className="space-y-2">
-                {d.tasks.map(task => {
-                  const key = `${session}-${d.day}-${task}`
-                  const done = completedTasks.includes(key)
-                  return (
-                    <li key={task} className="flex items-start gap-2 cursor-pointer" onClick={() => toggleTask(key)}>
-                      <div className={`w-4 h-4 rounded flex-shrink-0 mt-0.5 border-2 transition-colors flex items-center justify-center ${done ? 'bg-brand-indigo border-brand-indigo' : 'border-gray-300 dark:border-gray-500'}`}>
-                        {done && <CheckCircle size={10} className="text-white" />}
-                      </div>
-                      <span className={`text-xs leading-relaxed ${done ? 'text-gray-400 line-through' : 'text-gray-700 dark:text-gray-300'}`}>{task}</span>
-                    </li>
-                  )
-                })}
-              </ul>
+        <Button
+          variant="secondary" size="sm"
+          className="mt-4 w-full"
+          onClick={() => { setTasks(buildTasks()); localStorage.removeItem(getTodayKey()) }}
+        >
+          <RefreshCcw size={14}/> Reset Today's Tasks
+        </Button>
+      </Card>
+
+      {/* Progress snapshot */}
+      <Card className="mb-8">
+        <h2 className="text-lg font-extrabold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+          📊 Progress Snapshot
+        </h2>
+        <div className="space-y-3">
+          {[
+            { label:'Vocabulary', learned:progress.vocabLearned.length, total:vocabData.length },
+            { label:'Kanji',      learned:progress.kanjiLearned.length, total:kanjiData.length },
+            { label:'Grammar',    learned:progress.grammarMastered.length, total:grammarData.length },
+          ].map(item => (
+            <div key={item.label}>
+              <div className="flex justify-between text-sm mb-1">
+                <span className="font-medium text-gray-700 dark:text-gray-300">{item.label}</span>
+                <span className="text-gray-400">{item.learned}/{item.total} ({Math.round((item.learned/item.total)*100)}%)</span>
+              </div>
+              <ProgressBar value={item.learned} max={item.total} showPercent={false}/>
             </div>
           ))}
         </div>
       </Card>
 
-      {/* Roadmap */}
+      {/* Weekly plan */}
       <Card>
-        <h2 className="font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-          <Target size={18} className="text-brand-indigo" /> Your Full Learning Roadmap: Zero → N4
-        </h2>
-        <div className="space-y-4">
-          {roadmap.map((r, i) => (
-            <div key={r.phase} className="flex gap-4">
-              <div className="flex flex-col items-center">
-                <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center text-xs font-bold text-brand-indigo flex-shrink-0">{i + 1}</div>
-                {i < roadmap.length - 1 && <div className="w-0.5 flex-1 bg-gray-200 dark:bg-gray-600 mt-2 mb-0 min-h-[24px]" />}
-              </div>
-              <div className="flex-1 pb-4">
-                <div className="flex items-center gap-2 mb-2 flex-wrap">
-                  <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">{r.phase}</span>
-                  <Badge label={r.badge} variant="level" />
+        <h2 className="text-lg font-extrabold text-gray-900 dark:text-white mb-4">📆 Suggested Weekly Plan</h2>
+        <div className="space-y-3">
+          {days.map(day => {
+            const todayName = new Date().toLocaleString('default', { weekday: 'long' })
+            const isToday = day === todayName
+            return (
+              <div key={day}
+                className={`rounded-xl p-3 border ${isToday ? 'border-brand-indigo bg-indigo-50 dark:bg-indigo-900/20' : 'border-gray-100 dark:border-gray-800'}`}>
+                <div className="flex items-center justify-between mb-1">
+                  <span className={`font-semibold text-sm ${isToday ? 'text-brand-indigo' : 'text-gray-700 dark:text-gray-300'}`}>
+                    {day} {isToday && '← today'}
+                  </span>
                 </div>
-                <h3 className="font-bold text-gray-900 dark:text-white mb-2">{r.title}</h3>
-                <ul className="space-y-1">
-                  {r.items.map(item => (
-                    <li key={item} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                      <div className="w-1.5 h-1.5 rounded-full bg-brand-indigo flex-shrink-0" />
-                      {item}
-                    </li>
+                <div className="flex flex-wrap gap-2">
+                  {focusMap[day].map((f, i) => (
+                    <span key={i} className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-1 rounded-lg">{f}</span>
                   ))}
-                </ul>
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </Card>
     </div>

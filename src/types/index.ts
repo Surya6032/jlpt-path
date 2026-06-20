@@ -1,122 +1,46 @@
-export type JLPTLevel = 'N5' | 'N4' | 'Beginner'
-
 export interface HiraganaItem {
-  id: string
-  character: string
-  romaji: string
-  example: string
-  exampleMeaning: string
+  id: string; character: string; romaji: string; example: string; exampleMeaning: string
 }
-
 export interface KatakanaItem {
-  id: string
-  character: string
-  romaji: string
-  example: string
-  exampleMeaning: string
+  id: string; character: string; romaji: string; example: string; exampleMeaning: string
 }
-
 export interface VocabWord {
-  id: string
-  japanese: string
-  furigana: string
-  romaji: string
-  english: string
-  level: JLPTLevel
-  category: string
-  exampleJp: string
-  exampleEn: string
-  learned: boolean
-  weak: boolean
-  saved: boolean
+  id: string; japanese: string; furigana: string; romaji: string; english: string
+  level: 'N5' | 'N4'; category: string; example?: string; exampleEn?: string; mnemonic?: string
 }
-
 export interface KanjiItem {
-  id: string
-  kanji: string
-  meaning: string
-  onyomi: string
-  kunyomi: string
-  level: JLPTLevel
-  exampleWord: string
-  exampleReading: string
-  exampleSentenceJp: string
-  exampleSentenceEn: string
-  saved: boolean
+  id: string; character: string; meaning: string; onyomi: string; kunyomi: string
+  level: 'N5' | 'N4'; strokeCount: number; example: string; exampleReading: string; exampleMeaning: string; mnemonic?: string
 }
-
 export interface GrammarPoint {
-  id: string
-  title: string
-  structure: string
-  meaning: string
-  level: JLPTLevel
-  usageNotes: string
-  examples: { jp: string; furigana: string; en: string }[]
-  commonMistakes: string
-  relatedPatterns: string[]
+  id: string; pattern: string; meaning: string; level: 'N5' | 'N4'
+  explanation: string; examples: { jp: string; en: string }[]; notes?: string
 }
-
 export interface ReadingPassage {
-  id: string
-  title: string
-  level: JLPTLevel
-  topic: string
-  estimatedTime: number
-  bodyJp: string
-  bodyFurigana: string
-  bodyEn: string
-  questions: { question: string; options: string[]; answer: number }[]
+  id: string; title: string; level: 'N5' | 'N4'; text: string; translation: string
+  vocabulary: string[]; questions: { q: string; options: string[]; answer: number }[]
 }
-
 export interface ListeningExercise {
-  id: string
-  title: string
-  level: JLPTLevel
-  topic: string
-  audioSrc: string
-  transcript: string
-  questions: { question: string; options: string[]; answer: number }[]
+  id: string; title: string; level: 'N5' | 'N4'; transcript: string
+  translation: string; questions: { q: string; options: string[]; answer: number }[]
 }
-
 export interface QuizQuestion {
-  id: string
-  type: 'multiple-choice' | 'matching' | 'fill-blank' | 'listening' | 'reading'
-  prompt: string
-  options?: string[]
-  answer: string | number
-  explanation: string
-  topic: string
-  level: JLPTLevel
+  id: string; type: 'vocab' | 'kanji' | 'grammar' | 'listening'
+  question: string; options: string[]; answer: number; explanation?: string
 }
-
 export interface MockTest {
-  id: string
-  title: string
-  level: JLPTLevel
-  sections: {
-    name: string
-    questions: QuizQuestion[]
-    timeMinutes: number
-  }[]
+  id: string; title: string; level: 'N5' | 'N4'
+  sections: { name: string; questions: QuizQuestion[] }[]
 }
-
 export interface DailyPhrase {
-  id: string
-  japanese: string
-  furigana: string
-  romaji: string
-  english: string
-  context: string
+  id: string; japanese: string; furigana: string; english: string; category: string
 }
-
 export interface PronunciationItem {
-  id: string
-  title: string
-  description: string
-  examples: { jp: string; romaji: string; note: string }[]
+  id: string; character: string; romaji: string; type: 'hiragana' | 'katakana'
 }
-
+export interface SRSEntry {
+  interval: number; easeFactor: number; nextReview: string; reps: number
+}
 export interface UserProgress {
   streak: number
   totalStudyMinutes: number
@@ -133,4 +57,10 @@ export interface UserProgress {
   quizScores: { topic: string; score: number; date: string }[]
   achievements: string[]
   reviewQueue: string[]
+  studyDates: string[]
+  srsMap: Record<string, SRSEntry>
+  dailyGoalXP: number
+  xpToday: number
+  xpTotal: number
+  lastStudyDate: string
 }
