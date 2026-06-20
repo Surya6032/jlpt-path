@@ -131,7 +131,7 @@ export default function VocabularyPage() {
                 <div className="text-xs text-gray-400 mb-2">{word.romaji}</div>
                 <div className="font-semibold text-brand-indigo mb-2">{word.english}</div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <Badge>{word.level}</Badge>
+                  <Badge label={word.level} variant="level" />
                   <span className="text-xs text-gray-400">{word.category}</span>
                   <button onClick={() => speak(word.furigana)} className="ml-auto text-gray-400 hover:text-brand-indigo">
                     <Volume2 size={16}/>

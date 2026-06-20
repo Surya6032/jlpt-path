@@ -133,7 +133,7 @@ export default function HomePage() {
           <div className="grid sm:grid-cols-3 gap-6">
             {paths.map(p => (
               <Card key={p.label} className="hover:shadow-lg transition-shadow">
-                <Badge className="mb-3">{p.tag}</Badge>
+                <Badge label={p.tag} className="mb-3" />
                 <h3 className="font-bold text-gray-900 dark:text-white mb-2">{p.label}</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400">{p.desc}</p>
               </Card>
