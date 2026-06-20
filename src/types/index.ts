@@ -76,7 +76,6 @@ export interface DailyPhrase {
   romaji: string
   english: string
   context: string
-  category?: string
 }
 export interface PronunciationItem {
   id: string

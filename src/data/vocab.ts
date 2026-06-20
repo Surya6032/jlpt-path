@@ -65,7 +65,7 @@ export const vocabData: VocabWord[] = [
   { id:'v011', japanese:'十', furigana:'じゅう', romaji:'juu', english:'ten', level:'N5', category:'Numbers', example:'十円です。', exampleEn:'It is ten yen.', mnemonic:'A cross = ten (like Roman X).' },
   { id:'v012', japanese:'百', furigana:'ひゃく', romaji:'hyaku', english:'hundred', level:'N5', category:'Numbers', example:'百円ショップ。', exampleEn:'100-yen shop.', mnemonic:'HYAKu — a hundred yakults.' },
   { id:'v013', japanese:'千', furigana:'せん', romaji:'sen', english:'thousand', level:'N5', category:'Numbers', example:'千円です。', exampleEn:'It is 1000 yen.', mnemonic:'SEN — senator earns thousands.' },
-  { id:'v014', japanese:'万', furigana:'まん', romaji:'man', english:'ten thousand', level:'N5', category:'Numbers', example:'一万円。', exampleMeaning:'10,000 yen.', exampleEn:'10,000 yen.' },
+  { id:'v014', japanese:'万', furigana:'まん', romaji:'man', english:'ten thousand', level:'N5', category:'Numbers', example:'一万円。', exampleEn:'10,000 yen.' },
 
   // ── N5 Greetings ──
   { id:'v020', japanese:'おはようございます', furigana:'おはようございます', romaji:'ohayou gozaimasu', english:'Good morning (formal)', level:'N5', category:'Greetings', example:'おはようございます！', exampleEn:'Good morning!', mnemonic:'O-HA-YO — "Oh! Hi yo!" every morning.' },
