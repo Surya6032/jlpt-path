@@ -1,3 +1,5 @@
+export type JLPTLevel = 'N5' | 'N4' | 'N3' | 'N2' | 'N1'
+
 export interface HiraganaItem {
   id: string; character: string; romaji: string; example: string; exampleMeaning: string
 }
@@ -34,17 +36,30 @@ export interface GrammarPoint {
   commonMistakes?: string
   relatedPatterns?: string[]
   notes?: string
-  // legacy aliases kept for backward compat
   pattern?: string
   explanation?: string
 }
 export interface ReadingPassage {
-  id: string; title: string; level: 'N5' | 'N4'; text: string; translation: string
-  vocabulary: string[]; questions: { q: string; options: string[]; answer: number }[]
+  id: string
+  title: string
+  level: 'N5' | 'N4'
+  topic: string
+  estimatedTime: number
+  bodyJp: string
+  bodyFurigana: string
+  bodyEn: string
+  vocabulary?: string[]
+  questions: { question: string; options: string[]; answer: number }[]
 }
 export interface ListeningExercise {
-  id: string; title: string; level: 'N5' | 'N4'; transcript: string
-  translation: string; questions: { q: string; options: string[]; answer: number }[]
+  id: string
+  title: string
+  level: 'N5' | 'N4'
+  topic: string
+  audioSrc?: string
+  transcript: string
+  translation?: string
+  questions: { question: string; options: string[]; answer: number }[]
 }
 export interface QuizQuestion {
   id: string; type: 'vocab' | 'kanji' | 'grammar' | 'listening'
