@@ -9,8 +9,19 @@ export interface VocabWord {
   level: 'N5' | 'N4'; category: string; example?: string; exampleEn?: string; mnemonic?: string
 }
 export interface KanjiItem {
-  id: string; character: string; meaning: string; onyomi: string; kunyomi: string
-  level: 'N5' | 'N4'; strokeCount: number; example: string; exampleReading: string; exampleMeaning: string; mnemonic?: string
+  id: string
+  kanji: string
+  meaning: string
+  onyomi: string
+  kunyomi: string
+  level: 'N5' | 'N4'
+  exampleWord: string
+  exampleReading: string
+  exampleSentenceJp: string
+  exampleSentenceEn: string
+  saved?: boolean
+  strokeCount?: number
+  mnemonic?: string
 }
 export interface GrammarPoint {
   id: string
