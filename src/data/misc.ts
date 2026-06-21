@@ -470,5 +470,3 @@ export const pronunciationItems: PronunciationItem[] = [
   { id:'p09', title:'Silent Vowels (i and u)', description:'The vowels い and う are often devoiced (nearly silent) when they appear between or after voiceless consonants.', examples:[{jp:'です',romaji:'desu → "des" (u is silent)',note:'Very common in natural speech'},{jp:'します',romaji:'shimasu → "shimas"',note:'Final u often silent'},{jp:'すき',romaji:'suki → "ski"',note:'u is devoiced after s'}]},
   { id:'p10', title:'Shadowing Practice Tips', description:'Shadowing means repeating what you hear immediately as you listen. It is one of the best ways to improve pronunciation and natural rhythm.', examples:[{jp:'ゆっくり → 普通',romaji:'Slow → Normal speed',note:'Start slow, then match natural pace'},{jp:'リピートする',romaji:'Repeat what you hear',note:`Don't translate — just shadow`},{jp:'録音して聞く',romaji:'Record and listen back',note:'Self-monitoring improves accuracy fast'}]},
 ]
-
-export { readingPassages, listeningExercises, dailyPhrases, pronunciationItems }
