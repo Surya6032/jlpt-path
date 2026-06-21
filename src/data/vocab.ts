@@ -1568,8 +1568,6 @@ export const vocabData: VocabWord[] = [
   { id:'v1424', japanese:'アニメ', furigana:'あにめ', romaji:'anime', english:'anime', level:'N4', category:'Hobbies', example:'アニメを見ます。', exampleEn:'I will watch anime.', mnemonic:'ANIME — animation, Japanese style!' },
   { id:'v1425', japanese:'漫画', furigana:'まんが', romaji:'manga', english:'manga/comics', level:'N4', category:'Hobbies', example:'漫画を読みます。', exampleEn:'I will read manga.', mnemonic:'MANGA — man (whimsical) ga (picture) = manga.' },
   { id:'v1426', japanese:'カラオケ', furigana:'からおけ', romaji:'karaoke', english:'karaoke', level:'N4', category:'Hobbies', example:'カラオケに行きます。', exampleEn:'I will go to karaoke.', mnemonic:'KARAOKE — kara (empty) oke (orchestra) = karaoke!' },
-
-]
   { id:'v1427', japanese:'犬', furigana:'いぬ', romaji:'inu', english:'dog', level:'N5', category:'Animals', example:'犬が好きです。', exampleEn:'I like dogs.', mnemonic:'INU — \'in you\' there\'s a dog.' },
   { id:'v1428', japanese:'猫', furigana:'ねこ', romaji:'neko', english:'cat', level:'N5', category:'Animals', example:'猫がいます。', exampleEn:'There is a cat.', mnemonic:'NEKO — cats say \'nekk-o\'.' },
   { id:'v1429', japanese:'魚', furigana:'さかな', romaji:'sakana', english:'fish', level:'N5', category:'Animals', example:'魚を食べます。', exampleEn:'I eat fish.', mnemonic:'SAKANA — fish \'sack\' in water.' },
