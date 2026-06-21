@@ -442,15 +442,15 @@ export default function LessonsPage() {
     return saved ? JSON.parse(saved) : []
   })
 
-  // Record today as a study day
-  useEffect(() => {
+  // recordStudyDay is called only when a quiz completes (see handleAnswer)
+  const recordStudyDay = () => {
     const today = new Date().toISOString().split('T')[0]
     setStudyDates(prev => {
       const updated = prev.includes(today) ? prev : [...prev, today]
       localStorage.setItem('jlpt-study-dates', JSON.stringify(updated))
       return updated
     })
-  }, [])
+  }
 
   // ── Start a unit ──────────────────────────────────────────────────────────
   const startUnit = useCallback((u: Unit) => {
@@ -502,6 +502,9 @@ export default function LessonsPage() {
       setMood('sad')
       setWrongWords(prev => prev.find(w => w.id === q.word.id) ? prev : [...prev, q.word])
     }
+    // Correct: 2000ms — enough to see ✓ and hear word
+    // Wrong:   2500ms — extra time to read mnemonic before moving on
+    const delay = correct ? 2000 : 2500
     setTimeout(() => {
       setSelected(null); setHint(null)
       if (qIdx < questions.length - 1) {
@@ -517,10 +520,11 @@ export default function LessonsPage() {
         addStudyMinutes(Math.round(questions.length * 0.5))
         if (pct === 100) unlockAchievement('perfect_lesson')
         if (s === 3) unlockAchievement('three_star')
+        recordStudyDay()
         setMood(pct >= 70 ? 'excited' : 'sad')
         setScreen('result')
       }
-    }, 1400)
+    }, delay)
   }, [selected, questions, qIdx, score, streak, unit, markVocabLearned, addQuizScore, markLessonComplete, addStudyMinutes, unlockAchievement])
 
   // ── Use hint (eliminate one wrong option) ─────────────────────────────────
@@ -630,8 +634,6 @@ export default function LessonsPage() {
   if (screen === 'flashcard') {
     const word = flashWords[flashIdx]
     if (!word) return null
-    const isKanji = /[\u4E00-\u9FFF]/.test(word.japanese)
-
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 flex flex-col">
         {/* Progress bar */}
@@ -675,7 +677,7 @@ export default function LessonsPage() {
             </button>
 
             {/* Stroke display */}
-            {isKanji && <StrokeDisplay kanji={word.japanese[0]} />}
+            {/[\u4E00-\u9FFF]/.test(word.japanese) && <StrokeDisplay kanji={word.japanese[0]} />}
 
             {/* Hear it */}
             <button onClick={() => speak(word.furigana)}
@@ -788,12 +790,12 @@ export default function LessonsPage() {
               ) : q.type === 'en2jp' ? (
                 <div className="text-3xl font-bold text-gray-800 dark:text-white">{q.word.english}</div>
               ) : (
-                <>
-                  <div className="text-4xl font-black text-gray-900 dark:text-white">{q.word.japanese}</div>
-                  {/[\u4E00-\u9FFF]/.test(q.word.japanese) && (
-                    <div className="text-base text-purple-400 mt-1">{q.word.furigana}</div>
-                  )}
-                </>
+                <div className="flex justify-center">
+                  <ruby className="text-4xl font-black text-gray-900 dark:text-white">
+                    {q.word.japanese}
+                    <rt className="text-sm font-normal text-purple-500 tracking-widest">{q.word.furigana}</rt>
+                  </ruby>
+                </div>
               )}
               <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">{questionLabel}</div>
             </div>
@@ -840,11 +842,34 @@ export default function LessonsPage() {
               })}
             </div>
 
-            {/* Hint button */}
+            {/* Hint button — only before answering */}
             {selected === null && (
               <button onClick={useHint} className="mt-3 w-full text-xs text-amber-500 hover:text-amber-700 font-medium transition-colors py-1">
                 {hint ? '✓ Hint used — one wrong answer removed' : '💡 Use hint (remove one wrong answer)'}
               </button>
+            )}
+
+            {/* Post-answer feedback — mnemonic shown when wrong */}
+            {selected !== null && selected !== q.correct && (
+              <div className="mt-3 bg-amber-50 dark:bg-amber-900/20 rounded-2xl p-3 border border-amber-200 dark:border-amber-700 text-left animate-fadeIn">
+                <div className="text-xs font-bold text-amber-600 uppercase tracking-wide mb-1">💡 Memory trick</div>
+                <div className="text-sm text-amber-800 dark:text-amber-200 italic">{getMnemonic(q.word)}</div>
+                {q.word.example && (
+                  <div className="mt-2 text-xs text-gray-600 dark:text-gray-300">
+                    <span className="font-bold">Example: </span>{q.word.example}
+                    <span className="text-gray-400 ml-1">— {q.word.exampleEn}</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Post-answer feedback — reinforcement when correct */}
+            {selected !== null && selected === q.correct && q.word.example && (
+              <div className="mt-3 bg-green-50 dark:bg-green-900/20 rounded-2xl p-3 border border-green-200 dark:border-green-700 text-left">
+                <div className="text-xs font-bold text-green-600 uppercase tracking-wide mb-1">✅ Example</div>
+                <div className="text-sm text-gray-800 dark:text-gray-200">{q.word.example}</div>
+                <div className="text-xs text-gray-500 mt-0.5">{q.word.exampleEn}</div>
+              </div>
             )}
           </div>
         </div>
