@@ -139,9 +139,8 @@ src/
 |---|---|
 | N5 | Complete beginner — ~800 words |
 | N4 | Elementary — ~1500 words |
-| N3 | Intermediate — ~3750 words |
-| N2 | Upper intermediate — ~6000 words |
-| N1 | Advanced — ~10000 words |
+
+> 🚧 Currently covers **N5 and N4** only. N3 and beyond coming in future updates.
 
 ---
 
