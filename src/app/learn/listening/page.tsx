@@ -189,7 +189,7 @@ export default function ListeningPage() {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-fade-in">
       <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white">Listening Practice \u2014 \u8074\u89E3</h1>
+        <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white">Listening Practice — 聴解</h1>
         <p className="text-gray-500 dark:text-gray-400 mt-1">Daily-life dialogues with audio, transcript, and comprehension questions. Uses browser TTS for Japanese audio.</p>
       </div>
       <div className="flex gap-2 mb-6">
