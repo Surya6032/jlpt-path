@@ -2,7 +2,7 @@
 
 A personal Japanese language learning web app built with **Next.js 14**, **TypeScript**, and **Tailwind CSS** — deployed on GitHub Pages.
 
-Inspired by Duolingo's gamified learning style, JLPT Path guides you through JLPT N5 → N4 vocabulary, kanji, grammar, hiragana/katakana, listening, and reading — all in one place, built for one person: me.
+Gamified learning style, JLPT Path guides you through JLPT N5 → N4 vocabulary, kanji, grammar, hiragana/katakana, listening, and reading — all in one place, built for one person: me.
 
 ---
 
