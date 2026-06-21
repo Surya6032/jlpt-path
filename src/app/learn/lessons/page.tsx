@@ -697,12 +697,12 @@ export default function LessonsPage() {
                 </div>
 
                 {/* Example sentence */}
-                {word.exampleJp && (
+                {word.example && (
                   <div className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-3">
                     <div className="text-xs font-bold text-blue-400 uppercase tracking-wide mb-1">Example</div>
-                    <div className="text-sm font-medium text-gray-800 dark:text-gray-200">{word.exampleJp}</div>
+                    <div className="text-sm font-medium text-gray-800 dark:text-gray-200">{word.example}</div>
                     <div className="text-xs text-gray-500 mt-0.5">{word.exampleEn}</div>
-                    <button onClick={() => speak(word.exampleJp || '')}
+                    <button onClick={() => speak(word.example || '')}
                       className="text-xs text-blue-500 hover:text-blue-700 mt-1">🔊 hear sentence</button>
                   </div>
                 )}
