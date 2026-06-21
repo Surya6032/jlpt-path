@@ -15,33 +15,26 @@ interface Unit  { id: string; title: string; emoji: string; level: 'N5'|'N4'; ca
 // ─── All 25 Units mapped to every category in vocab ──────────────────────────
 const UNITS: Unit[] = [
   // N5
-  { id:'u01', title:'Greetings',     emoji:'👋', level:'N5', category:'Greetings',  color:'#461E96' },
-  { id:'u02', title:'Family',        emoji:'👨‍👩‍👧', level:'N5', category:'Family',     color:'#00B4E6' },
-  { id:'u03', title:'Numbers',       emoji:'🔢', level:'N5', category:'Numbers',    color:'#E6008C' },
-  { id:'u04', title:'Time',          emoji:'⏰', level:'N5', category:'Time',       color:'#00DC8C' },
-  { id:'u05', title:'Food & Drink',  emoji:'🍜', level:'N5', category:'Food',       color:'#735CCC' },
-  { id:'u06', title:'Daily Life',    emoji:'🏠', level:'N5', category:'Daily Life', color:'#461E96' },
-  { id:'u07', title:'School',        emoji:'📚', level:'N5', category:'School',     color:'#00B4E6' },
-  { id:'u08', title:'Locations',     emoji:'📍', level:'N5', category:'Locations',  color:'#E6008C' },
-  { id:'u09', title:'Weather',       emoji:'🌤',  level:'N5', category:'Weather',    color:'#00DC8C' },
-  { id:'u10', title:'Adjectives',    emoji:'✨', level:'N5', category:'Adjectives', color:'#735CCC' },
-  { id:'u11', title:'Verbs N5',      emoji:'⚡', level:'N5', category:'Verbs',      color:'#461E96' },
-  { id:'u12', title:'Common Words',  emoji:'💬', level:'N5', category:'Common',     color:'#00B4E6' },
-  { id:'u13', title:'Animals',       emoji:'🐾', level:'N5', category:'Animals',    color:'#E6008C' },
-  { id:'u14', title:'Health N5',     emoji:'🏥', level:'N5', category:'Health',     color:'#00DC8C' },
-  { id:'u15', title:'Nature',        emoji:'🌸', level:'N5', category:'Nature',     color:'#735CCC' },
-  { id:'u16', title:'Seasons',       emoji:'🍂', level:'N5', category:'Seasons',    color:'#461E96' },
-  { id:'u17', title:'Work N5',       emoji:'💼', level:'N5', category:'Work',       color:'#00B4E6' },
+  { id:'u01', title:'Greetings',      emoji:'👋', level:'N5', category:'Greetings',      color:'#461E96' },
+  { id:'u02', title:'Numbers',        emoji:'🔢', level:'N5', category:'Numbers',        color:'#00B4E6' },
+  { id:'u03', title:'Family',         emoji:'👨‍👩‍👧', level:'N5', category:'Family',         color:'#E6008C' },
+  { id:'u04', title:'Food & Drink',   emoji:'🍜', level:'N5', category:'Food',           color:'#00DC8C' },
+  { id:'u05', title:'Colors',         emoji:'🎨', level:'N5', category:'Colors',         color:'#735CCC' },
+  { id:'u06', title:'Time',           emoji:'⏰', level:'N5', category:'Time',           color:'#461E96' },
+  { id:'u07', title:'Places',         emoji:'📍', level:'N5', category:'Places',         color:'#00B4E6' },
+  { id:'u08', title:'Adjectives N5',  emoji:'✨', level:'N5', category:'Adjectives',     color:'#E6008C' },
+  { id:'u09', title:'Verbs N5',       emoji:'⚡', level:'N5', category:'Verbs',          color:'#00DC8C' },
+  { id:'u10', title:'Animals',        emoji:'🐾', level:'N5', category:'Animals',        color:'#735CCC' },
+  { id:'u11', title:'Body',           emoji:'🫀', level:'N5', category:'Body',           color:'#461E96' },
   // N4
-  { id:'u18', title:'Adjectives N4', emoji:'🎨', level:'N4', category:'Adjectives', color:'#E6008C' },
-  { id:'u19', title:'Adverbs',       emoji:'🔤', level:'N4', category:'Adverbs',    color:'#00DC8C' },
-  { id:'u20', title:'Daily Life N4', emoji:'🏡', level:'N4', category:'Daily Life', color:'#735CCC' },
-  { id:'u21', title:'Health N4',     emoji:'💊', level:'N4', category:'Health',     color:'#461E96' },
-  { id:'u22', title:'School N4',     emoji:'🏫', level:'N4', category:'School',     color:'#00B4E6' },
-  { id:'u23', title:'Society',       emoji:'🌏', level:'N4', category:'Society',    color:'#E6008C' },
-  { id:'u24', title:'Travel',        emoji:'✈️', level:'N4', category:'Travel',     color:'#00DC8C' },
-  { id:'u25', title:'Verbs N4',      emoji:'🏃', level:'N4', category:'Verbs',      color:'#735CCC' },
-  { id:'u26', title:'Work N4',       emoji:'🏢', level:'N4', category:'Work',       color:'#461E96' },
+  { id:'u12', title:'Verbs N4',       emoji:'🏃', level:'N4', category:'Verbs N4',       color:'#00B4E6' },
+  { id:'u13', title:'Adjectives N4',  emoji:'🎭', level:'N4', category:'Adjectives N4',  color:'#E6008C' },
+  { id:'u14', title:'Society',        emoji:'🌏', level:'N4', category:'Society',        color:'#00DC8C' },
+  { id:'u15', title:'Travel',         emoji:'✈️', level:'N4', category:'Travel',         color:'#735CCC' },
+  { id:'u16', title:'Work',           emoji:'💼', level:'N4', category:'Work',           color:'#461E96' },
+  { id:'u17', title:'Health',         emoji:'💊', level:'N4', category:'Health',         color:'#00B4E6' },
+  { id:'u18', title:'Nature',         emoji:'🌸', level:'N4', category:'Nature',         color:'#E6008C' },
+  { id:'u19', title:'Adverbs',        emoji:'🔤', level:'N4', category:'Adverbs',        color:'#00DC8C' },
 ]
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -667,10 +660,13 @@ export default function LessonsPage() {
             </div>
 
             {/* Japanese word */}
-            <div className="text-5xl font-black text-gray-900 dark:text-white mb-1">{word.japanese}</div>
-
-            {/* Furigana */}
-            {isKanji && <div className="text-lg text-purple-500 mb-1">{word.furigana}</div>}
+            {/* Japanese word with ruby furigana above */}
+            <div className="flex justify-center mb-2">
+              <ruby className="text-5xl font-black text-gray-900 dark:text-white">
+                {word.japanese}
+                <rt className="text-base font-normal text-purple-500 tracking-widest">{word.furigana}</rt>
+              </ruby>
+            </div>
 
             {/* Romaji toggle */}
             <button onClick={() => setShowRomaji(r => !r)}
@@ -701,12 +697,12 @@ export default function LessonsPage() {
                 </div>
 
                 {/* Example sentence */}
-                {word.example && (
+                {word.exampleJp && (
                   <div className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-3">
                     <div className="text-xs font-bold text-blue-400 uppercase tracking-wide mb-1">Example</div>
-                    <div className="text-sm font-medium text-gray-800 dark:text-gray-200">{word.example}</div>
+                    <div className="text-sm font-medium text-gray-800 dark:text-gray-200">{word.exampleJp}</div>
                     <div className="text-xs text-gray-500 mt-0.5">{word.exampleEn}</div>
-                    <button onClick={() => speak(word.example || '')}
+                    <button onClick={() => speak(word.exampleJp || '')}
                       className="text-xs text-blue-500 hover:text-blue-700 mt-1">🔊 hear sentence</button>
                   </div>
                 )}
