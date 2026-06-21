@@ -51,7 +51,6 @@ export const katakanaData: KatakanaItem[] = [
 ]
 
 export const vocabData: VocabWord[] = [
-export const vocabData: VocabWord[] = [
   // ── N5 Numbers ──
   { id:'v001', japanese:'零', furigana:'ぜろ・れい', romaji:'zero / rei', english:'zero', level:'N5', category:'Numbers', example:'零点です。', exampleEn:'It\'s zero points.', mnemonic:'ZERO — sounds like \'zero\'!' },
   { id:'v002', japanese:'一', furigana:'いち', romaji:'ichi', english:'one', level:'N5', category:'Numbers', example:'一番好きです。', exampleEn:'I like it the most.', mnemonic:'ICHI — one itchy finger.' },
