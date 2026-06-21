@@ -7,6 +7,7 @@ import {
   BookOpen, LayoutDashboard, PenLine, Headphones, Brain,
   BarChart2, CalendarDays, Search, Menu, X, Sun, Moon, FlameIcon
 } from 'lucide-react'
+import { useProgress } from '@/store/progress'
 
 const navLinks = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -25,6 +26,7 @@ const navLinks = [
 export function Navbar({ darkMode, toggleDark }: { darkMode: boolean; toggleDark: () => void }) {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
+  const { progress } = useProgress()
 
   return (
     <nav className="sticky top-0 z-40 bg-white/90 dark:bg-gray-900/90 backdrop-blur border-b border-gray-100 dark:border-gray-800">
@@ -65,7 +67,7 @@ export function Navbar({ darkMode, toggleDark }: { darkMode: boolean; toggleDark
             </button>
             <Link href="/dashboard" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-brand-indigo text-white rounded-xl text-sm font-semibold hover:bg-indigo-700 transition-colors">
               <FlameIcon size={15} />
-              <span>3 🔥</span>
+              <span>{progress.streak} 🔥</span>
             </Link>
             <button onClick={() => setOpen(!open)} className="lg:hidden p-2 rounded-lg text-gray-600 dark:text-gray-400">
               {open ? <X size={20} /> : <Menu size={20} />}
